@@ -22,6 +22,7 @@
 package it.ministerodellasalute.verificaC19.ui.main.codeReader
 
 import android.os.Bundle
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +33,6 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.findNavController
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.ResultPoint
-import com.google.zxing.client.android.BeepManager
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
@@ -45,7 +45,6 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
     private var _binding: FragmentCodeReaderBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var beepManager: BeepManager
     private var lastText: String? = null
 
     private val callback: BarcodeCallback = object : BarcodeCallback {
@@ -59,7 +58,7 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
             lastText = result.text
 
             try{
-                beepManager.playBeepSoundAndVibrate()
+                binding.root.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
             }catch (e: Exception){}
 
             navigateToVerificationPage(result.text)
@@ -89,7 +88,6 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
         binding.barcodeScanner.initializeFromIntent(requireActivity().intent)
         binding.barcodeScanner.decodeContinuous(callback)
         binding.barcodeScanner.statusView.text = ""
-        beepManager = BeepManager(requireActivity())
 
         binding.stopButton.setOnClickListener(this)
     }
