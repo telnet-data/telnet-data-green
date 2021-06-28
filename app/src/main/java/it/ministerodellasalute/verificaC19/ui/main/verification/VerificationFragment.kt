@@ -62,7 +62,6 @@ class VerificationFragment : Fragment(), View.OnClickListener {
 
     private var _binding: FragmentVerificationBinding? = null
     private val binding get() = _binding!!
-    private lateinit var certificateModel: CertificateModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -84,7 +83,6 @@ class VerificationFragment : Fragment(), View.OnClickListener {
 
         viewModel.certificate.observe(viewLifecycleOwner) { certificate ->
             certificate?.let {
-                certificateModel = it
                 setPersonData(it.person, it.dateOfBirth)
             }
         }
@@ -110,90 +108,90 @@ class VerificationFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun isAnyTestExpired(it: CertificateModel): TestExpiryValues {
-        it.recoveryStatements?.let {
+    private fun isAnyTestExpired(certificateModel: CertificateModel?): TestExpiryValues {
+        certificateModel?.let { certificate ->
+            certificate.recoveryStatements?.let {
 
-            try {
+                try {
 
-                val startDate: LocalDate = LocalDate.parse(clearExtraTime(it.last().certificateValidFrom))
+                    val startDate: LocalDate = LocalDate.parse(clearExtraTime(it.last().certificateValidFrom))
 
-                val endDate: LocalDate = LocalDate.parse(clearExtraTime(it.last().certificateValidUntil))
+                    val endDate: LocalDate = LocalDate.parse(clearExtraTime(it.last().certificateValidUntil))
 
-                Log.d("dates", "start:" + startDate.toString() +" end: " +endDate.toString())
-                return when {
-                    startDate.isAfter(LocalDate.now()) -> TestExpiryValues.FUTURE
-                    LocalDate.now().isAfter(endDate) -> TestExpiryValues.EXPIRED
-                    else -> TestExpiryValues.VALID
-                }
-            } catch (e: Exception) {
-                return TestExpiryValues.TECHNICAL_ERROR
-            }
-
-            return TestExpiryValues.EXPIRED
-        }
-        it.tests?.let {
-
-            if (it.last().resultType == TestResult.DETECTED) {
-                return TestExpiryValues.TECHNICAL_ERROR
-            }
-            try {
-
-                val odtDateTimeOfCollection = OffsetDateTime.parse(it.last().dateTimeOfCollection)
-                val ldtDateTimeOfCollection = odtDateTimeOfCollection.toLocalDateTime()
-
-                val startDate: LocalDateTime =
-                    ldtDateTimeOfCollection
-                        .plusHours(Integer.parseInt(viewModel.getRapidTestStartHour()).toLong())
-
-                val endDate: LocalDateTime =
-                    ldtDateTimeOfCollection
-                        .plusHours(Integer.parseInt(viewModel.getRapidTestEndHour()).toLong())
-                Log.d("dates", "start:" + startDate.toString() +" end: " +endDate.toString())
-                return when {
-                    startDate.isAfter(LocalDateTime.now()) -> TestExpiryValues.FUTURE
-                    LocalDateTime.now().isAfter(endDate) -> TestExpiryValues.EXPIRED
-                    else -> TestExpiryValues.VALID
-                }
-            } catch (e: Exception) {
-                return TestExpiryValues.TECHNICAL_ERROR
-            }
-
-            return TestExpiryValues.EXPIRED
-        }
-
-        it.vaccinations?.let {
-            try {
-                if (it.last().doseNumber < it.last().totalSeriesOfDoses) {
-                    val startDate: LocalDate = LocalDate.parse(clearExtraTime(it.last().dateOfVaccination))
-                        .plusDays(Integer.parseInt(viewModel.getVaccineStartDayNotComplete(it.last().medicinalProduct)).toLong())
-
-                    val endDate: LocalDate = LocalDate.parse(clearExtraTime(it.last().dateOfVaccination))
-                        .plusDays(Integer.parseInt(viewModel.getVaccineEndDayNotComplete(it.last().medicinalProduct)).toLong())
-                    Log.d("dates", "start:" + startDate.toString() +" end: " +endDate.toString())
+                    Log.d("dates", "start:" + startDate.toString() + " end: " + endDate.toString())
                     return when {
                         startDate.isAfter(LocalDate.now()) -> TestExpiryValues.FUTURE
                         LocalDate.now().isAfter(endDate) -> TestExpiryValues.EXPIRED
                         else -> TestExpiryValues.VALID
                     }
-                } else if (it.last().doseNumber == it.last().totalSeriesOfDoses) {
-                    val startDate: LocalDate = LocalDate.parse(clearExtraTime(it.last().dateOfVaccination))
-                        .plusDays(Integer.parseInt(viewModel.getVaccineStartDayComplete(it.last().medicinalProduct)).toLong())
-
-                    val endDate: LocalDate = LocalDate.parse(clearExtraTime(it.last().dateOfVaccination))
-                        .plusDays(Integer.parseInt(viewModel.getVaccineEndDayComplete(it.last().medicinalProduct)).toLong())
-                    Log.d("dates", "start:" + startDate.toString() +" end: " +endDate.toString())
-                    return when {
-                        startDate.isAfter(LocalDate.now()) -> TestExpiryValues.FUTURE
-                        LocalDate.now().isAfter(endDate) -> TestExpiryValues.EXPIRED
-                        else -> TestExpiryValues.VALID
-                    }
-                }
-                else if (it.last().doseNumber > it.last().totalSeriesOfDoses)
-                {
+                } catch (e: Exception) {
                     return TestExpiryValues.TECHNICAL_ERROR
                 }
-            } catch (e: Exception) {
-                return TestExpiryValues.TECHNICAL_ERROR
+
+                return TestExpiryValues.EXPIRED
+            }
+            certificate.tests?.let {
+
+                if (it.last().resultType == TestResult.DETECTED) {
+                    return TestExpiryValues.TECHNICAL_ERROR
+                }
+                try {
+
+                    val odtDateTimeOfCollection = OffsetDateTime.parse(it.last().dateTimeOfCollection)
+                    val ldtDateTimeOfCollection = odtDateTimeOfCollection.toLocalDateTime()
+
+                    val startDate: LocalDateTime =
+                            ldtDateTimeOfCollection
+                                    .plusHours(Integer.parseInt(viewModel.getRapidTestStartHour()).toLong())
+
+                    val endDate: LocalDateTime =
+                            ldtDateTimeOfCollection
+                                    .plusHours(Integer.parseInt(viewModel.getRapidTestEndHour()).toLong())
+                    Log.d("dates", "start:" + startDate.toString() + " end: " + endDate.toString())
+                    return when {
+                        startDate.isAfter(LocalDateTime.now()) -> TestExpiryValues.FUTURE
+                        LocalDateTime.now().isAfter(endDate) -> TestExpiryValues.EXPIRED
+                        else -> TestExpiryValues.VALID
+                    }
+                } catch (e: Exception) {
+                    return TestExpiryValues.TECHNICAL_ERROR
+                }
+
+                return TestExpiryValues.EXPIRED
+            }
+
+            certificate.vaccinations?.let {
+                try {
+                    if (it.last().doseNumber < it.last().totalSeriesOfDoses) {
+                        val startDate: LocalDate = LocalDate.parse(clearExtraTime(it.last().dateOfVaccination))
+                                .plusDays(Integer.parseInt(viewModel.getVaccineStartDayNotComplete(it.last().medicinalProduct)).toLong())
+
+                        val endDate: LocalDate = LocalDate.parse(clearExtraTime(it.last().dateOfVaccination))
+                                .plusDays(Integer.parseInt(viewModel.getVaccineEndDayNotComplete(it.last().medicinalProduct)).toLong())
+                        Log.d("dates", "start:" + startDate.toString() + " end: " + endDate.toString())
+                        return when {
+                            startDate.isAfter(LocalDate.now()) -> TestExpiryValues.FUTURE
+                            LocalDate.now().isAfter(endDate) -> TestExpiryValues.EXPIRED
+                            else -> TestExpiryValues.VALID
+                        }
+                    } else if (it.last().doseNumber == it.last().totalSeriesOfDoses) {
+                        val startDate: LocalDate = LocalDate.parse(clearExtraTime(it.last().dateOfVaccination))
+                                .plusDays(Integer.parseInt(viewModel.getVaccineStartDayComplete(it.last().medicinalProduct)).toLong())
+
+                        val endDate: LocalDate = LocalDate.parse(clearExtraTime(it.last().dateOfVaccination))
+                                .plusDays(Integer.parseInt(viewModel.getVaccineEndDayComplete(it.last().medicinalProduct)).toLong())
+                        Log.d("dates", "start:" + startDate.toString() + " end: " + endDate.toString())
+                        return when {
+                            startDate.isAfter(LocalDate.now()) -> TestExpiryValues.FUTURE
+                            LocalDate.now().isAfter(endDate) -> TestExpiryValues.EXPIRED
+                            else -> TestExpiryValues.VALID
+                        }
+                    } else if (it.last().doseNumber > it.last().totalSeriesOfDoses) {
+                        return TestExpiryValues.TECHNICAL_ERROR
+                    }
+                } catch (e: Exception) {
+                    return TestExpiryValues.TECHNICAL_ERROR
+                }
             }
         }
         return TestExpiryValues.EXPIRED
@@ -208,7 +206,7 @@ class VerificationFragment : Fragment(), View.OnClickListener {
 
     private fun setCertStatusUI(verificationResult: VerificationResult) {
         if (verificationResult.isValid()) {
-            val certificateValidityResult = isAnyTestExpired(certificateModel)
+            val certificateValidityResult = isAnyTestExpired(viewModel.certificate.value)
             if (certificateValidityResult == TestExpiryValues.VALID) {
                 binding.containerPersonDetails.visibility = View.VISIBLE
                 binding.checkmark.background =
