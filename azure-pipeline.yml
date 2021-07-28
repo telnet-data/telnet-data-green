@@ -275,7 +275,7 @@ stages:
           preDeploy: 
            steps:
             - script: |
-               echo "Publish to appcenter - var store $(store)"
+               echo "pre deploy to appcenter - var store $(store)"
             - task: DownloadPipelineArtifact@2
               inputs:
                 buildType: 'specific'
@@ -286,6 +286,8 @@ stages:
                 targetPath: '$(Pipeline.Workspace)'
           deploy:
             steps:
+              - script: |
+                  echo "pre deploy to appcenter - var store $(store)"
               - task: AppCenterDistribute@3
                 inputs:
                   serverEndpoint: 'DGC-App'
@@ -329,6 +331,8 @@ stages:
         runOnce:    #rolling, canary are the other strategies that are supported
           preDeploy: 
            steps:
+            - script: |
+                echo "pre deploy to store - var store $(store)"
             - task: DownloadPipelineArtifact@2
               inputs:
                 buildType: 'specific'
@@ -337,8 +341,11 @@ stages:
                 specificBuildWithTriggering: true
                 buildVersionToDownload: 'latest'
                 targetPath: '$(Pipeline.Workspace)'
-            - script: |
-                echo "Publish to store - var store $(store)"
+            
+          deploy:
+            steps:
+             - script: |
+                echo "deploy to store - var store $(store)"
 
         #   - task: GooglePlayReleaseBundle@3
         #       inputs:
