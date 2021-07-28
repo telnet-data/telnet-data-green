@@ -286,16 +286,16 @@ stages:
                 targetPath: '$(Pipeline.Workspace)'
           deploy:
             steps:
-            - task: AppCenterDistribute@3
-              inputs:
-                serverEndpoint: 'DGC-App'
-                appSlug: 'sogei/it-dgc-verificaC19-android'
-                appFile: '$(Pipeline.Workspace)/apk/app-release-unsigned.apk'
-                symbolsOption: 'Android'
-                releaseNotesOption: 'file'
-                releaseNotesFile: '$(PIPELINE.WORKSPACE)/release-notes/release-notes.xml'
-                destinationType: 'groups'
-                isSilent: true
+              - task: AppCenterDistribute@3
+                inputs:
+                  serverEndpoint: 'DGC-App'
+                  appSlug: 'sogei/it-dgc-verificaC19-android'
+                  appFile: '$(Pipeline.Workspace)/apk/app-release-unsigned.apk'
+                  symbolsOption: 'Android'
+                  releaseNotesOption: 'file'
+                  releaseNotesFile: '$(PIPELINE.WORKSPACE)/release-notes/release-notes.xml'
+                  destinationType: 'groups'
+                  isSilent: true
               
 
 
