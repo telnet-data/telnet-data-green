@@ -220,13 +220,13 @@ stages:
         gradleOptions: '-Xmx3072m'
         sonarQubeRunAnalysis: false
         spotBugsAnalysis: false
-      condition: and(succeeded(), eq(variables.store, true));
+      condition: and(succeeded(), eq(variables.store, true))
 
     - task: CopyFiles@2
       inputs:
         contents: '**/*.aab'
         targetFolder: '$(build.artifactStagingDirectory)'
-      condition: and(succeeded(), eq(variables.store, true));
+      condition: and(succeeded(), eq(variables.store, true))
     - task: AndroidSigning@2
       inputs:
         apkFiles: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/bundle/release/app-release.aab'
@@ -235,14 +235,14 @@ stages:
         jarsignerKeystoreAlias: '$(keystorealias)'
         jarsignerKeyPassword: '$(keystorepassword)'
         jarsignerArguments: '-sigalg SHA256withRSA -digestalg SHA-256'
-      condition: and(succeeded(), eq(variables.store, true));
+      condition: and(succeeded(), eq(variables.store, true))
     
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/bundle/release/app-release.aab'
         artifact: 'bundle'
         publishLocation: 'pipeline'
-      condition: and(succeeded(), eq(variables.store, true));
+      condition: and(succeeded(), eq(variables.store, true))
 
     - task: PublishPipelineArtifact@1
       inputs:
