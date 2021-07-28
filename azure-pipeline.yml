@@ -252,7 +252,7 @@ stages:
  
 - stage: AppCenterRelease
   dependsOn: Build
-  #condition: eq(stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.appcenter'], true)
+  condition: and(succeeded(),eq(dependencies.Build.InitPipeline.outputs['checkBuildCommit.appcenter'], true))
   variables: 
     build: $[ stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.build'] ]
     debug: $[ stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.debug'] ]
@@ -288,14 +288,6 @@ stages:
                 echo 'appcenter $(appcenter)'
                 echo 'store $(store)'
                 
-            - task: DownloadPipelineArtifact@2
-              inputs:
-                buildType: 'specific'
-                project: 'd8761144-9102-412a-9be9-76b96650fb00'
-                definition: '12'
-                specificBuildWithTriggering: true
-                buildVersionToDownload: 'latest'
-                targetPath: '$(Pipeline.Workspace)'
           deploy:
             steps:
               - script: |
@@ -317,7 +309,7 @@ stages:
 
 - stage: GooglePlayTestRelease
   dependsOn: Build
-  condition: and(succeeded(), eq(stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.store'], true))
+  condition: and(succeeded(), eq(dependencies.Build.InitPipeline.outputs['checkBuildCommit.store'], true))
   variables: 
     build: $[ stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.build'] ]
     debug: $[ stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.debug'] ]
