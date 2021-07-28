@@ -124,7 +124,7 @@ stages:
     
     - task: ExtractVersionFromTag@1
       inputs:
-        projectFolderPath: '$(Build.SourcesDirectory)'
+        projectFolderPath: '$(Build.SourcesDirectory)/it-dgc-verificaC19-android'
     
     - bash: |
          echo 'message $(message)'
