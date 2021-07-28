@@ -173,7 +173,10 @@ stages:
       inputs:
         gradleWrapperFile: 'it-dgc-verificaC19-android/gradlew'
         workingDirectory: 'it-dgc-verificaC19-android'
-        tasks: 'assembleRelease'
+        ${{ if eq(variables['release'],true) }}:
+          tasks: 'assembleRelease'
+        ${{ if eq(variables['debug'],true) }}:
+          tasks: 'assembleDebug'
         publishJUnitResults: true
         testResultsFiles: '**/TEST-*.xml'
         javaHomeOption: 'JDKVersion'
