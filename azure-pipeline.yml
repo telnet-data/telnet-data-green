@@ -252,7 +252,7 @@ stages:
  
 - stage: AppCenterRelease
   dependsOn: Build
-  condition: and(succeeded(), eq(stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.appcenter'], true))
+  #condition: eq(stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.appcenter'], true)
   variables: 
     build: $[ stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.build'] ]
     debug: $[ stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.debug'] ]
