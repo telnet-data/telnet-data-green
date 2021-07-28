@@ -122,9 +122,9 @@ stages:
       clean: true
     - checkout: dgca-app-core-android
     
-    # - task: ExtractVersionFromTag@1
-    #   inputs:
-    #     projectFolderPath: '$(Build.SourcesDirectory)'
+    - task: ExtractVersionFromTag@1
+      inputs:
+        projectFolderPath: '$(Build.SourcesDirectory)/it-dgc-verificaC19-android'
     
     - bash: |
          echo 'message $(message)'
@@ -133,16 +133,16 @@ stages:
          echo 'release $(release)'
          echo 'appcenter $(appcenter)'
          echo 'store $(store)'
-    #    echo '$(NUMBER_OF_COMMITS)'
-    #    echo '$(MAJOR).$(MINOR).$(PATCH)-dev'
+         echo '$(NUMBER_OF_COMMITS)'
+         echo '$(MAJOR).$(MINOR).$(PATCH)-dev'
     
     - task: UpdateAndroidVersionGradle@1
       inputs:
         buildGradlePath: 'it-dgc-verificaC19-android/app/build.gradle'
-        #versionCode: '$(NUMBER_OF_COMMITS)'
-        versionCode: '$(versionCounter)'
-        # versionName: '$(MAJOR).$(MINOR).$(PATCH)-dev'
-        versionName: '$(version-name)-dev'
+        versionCode: '$(NUMBER_OF_COMMITS)'
+        #versionCode: '$(versionCounter)'
+        versionName: '$(MAJOR).$(MINOR).$(PATCH)-dev'
+        #versionName: '$(version-name)-dev'
         ${{ if eq(variables['release'],true) }}:
           versionName: '$(version-name)'
 
