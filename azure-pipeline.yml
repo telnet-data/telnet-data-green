@@ -249,7 +249,7 @@ stages:
         targetPath: 'it-dgc-verificaC19-android/metadata/release-notes.xml'
         artifact: 'release-notes'
         publishLocation: 'pipeline'
- 
+  
 - stage: AppCenterRelease
   dependsOn: Build
   condition: eq(dependencies.Build.outputs['InitPipeline.checkBuildCommit.appcenter'], true))
