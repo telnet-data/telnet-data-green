@@ -191,7 +191,9 @@ stages:
 
     - task: AndroidSigning@3
       inputs:
-        apkFiles: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/release/app-release-unsigned.apk'
+        targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/debug/app-debug.apk'
+        ${{ if eq(variables['release'],true) }}:
+          targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/release/app-release.apk'
         apksignerKeystoreFile: 'android-c19-key.jks'
         apksignerKeystorePassword: '$(keystorepassword)'
         apksignerKeystoreAlias: '$(keystorealias)'
@@ -200,7 +202,9 @@ stages:
 
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/release/app-release-unsigned.apk'
+        targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/debug/app-debug.apk'
+        ${{ if eq(variables['release'],true) }}:
+          targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/release/app-release.apk'
         artifact: 'apk'
         publishLocation: 'pipeline'
 
@@ -216,12 +220,13 @@ stages:
         gradleOptions: '-Xmx3072m'
         sonarQubeRunAnalysis: false
         spotBugsAnalysis: false
+      condition: and(succeeded(), eq(variables.store, true));
 
     - task: CopyFiles@2
       inputs:
         contents: '**/*.aab'
         targetFolder: '$(build.artifactStagingDirectory)'
-
+      condition: and(succeeded(), eq(variables.store, true));
     - task: AndroidSigning@2
       inputs:
         apkFiles: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/bundle/release/app-release.aab'
@@ -230,13 +235,15 @@ stages:
         jarsignerKeystoreAlias: '$(keystorealias)'
         jarsignerKeyPassword: '$(keystorepassword)'
         jarsignerArguments: '-sigalg SHA256withRSA -digestalg SHA-256'
+      condition: and(succeeded(), eq(variables.store, true));
     
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/bundle/release/app-release.aab'
         artifact: 'bundle'
         publishLocation: 'pipeline'
-    
+      condition: and(succeeded(), eq(variables.store, true));
+
     - task: PublishPipelineArtifact@1
       inputs:
         targetPath: 'it-dgc-verificaC19-android/metadata/release-notes.xml'
@@ -292,12 +299,14 @@ stages:
           deploy:
             steps:
               - script: |
-                  echo "pre deploy to appcenter - var appcenter $(appcenter)"
+                  echo "deploy deploy to appcenter - var appcenter $(appcenter)"
               - task: AppCenterDistribute@3
                 inputs:
                   serverEndpoint: 'DGC-App'
                   appSlug: 'sogei/it-dgc-verificaC19-android'
-                  appFile: '$(Pipeline.Workspace)/apk/app-release-unsigned.apk'
+                  appFile: '$(Pipeline.Workspace)/apk/app-debug.apk'
+                  ${{ if eq(variables['release'],true) }}:
+                    appFile: '$(Pipeline.Workspace)/apk/app-release.apk'
                   symbolsOption: 'Android'
                   releaseNotesOption: 'file'
                   releaseNotesFile: '$(PIPELINE.WORKSPACE)/release-notes/release-notes.xml'
