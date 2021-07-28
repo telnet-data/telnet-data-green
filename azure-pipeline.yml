@@ -122,9 +122,9 @@ stages:
       clean: true
     - checkout: dgca-app-core-android
     
-    # - task: ExtractVersionFromTag@1
-    #   inputs:
-    #     projectFolderPath: '$(Build.SourcesDirectory)'
+    - task: ExtractVersionFromTag@1
+      inputs:
+        projectFolderPath: '$(Build.SourcesDirectory)'
     
     - bash: |
          echo 'message $(message)'
@@ -133,18 +133,18 @@ stages:
          echo 'release $(release)'
          echo 'appcenter $(appcenter)'
          echo 'store $(store)'
-    #    echo '$(NUMBER_OF_COMMITS)'
-    #    echo '$(MAJOR).$(MINOR).$(PATCH)-dev'
+         echo '$(NUMBER_OF_COMMITS)'
+         echo '$(MAJOR).$(MINOR).$(PATCH)-dev'
     
     - task: UpdateAndroidVersionGradle@1
       inputs:
         buildGradlePath: 'it-dgc-verificaC19-android/app/build.gradle'
-        #versionCode: '$(NUMBER_OF_COMMITS)'
-        versionCode: '$(versionCounter)'
-        # versionName: '$(MAJOR).$(MINOR).$(PATCH)-dev'
-        versionName: '$(version-name)-dev'
+        versionCode: '$(NUMBER_OF_COMMITS)'
+        # versionCode: '$(versionCounter)'
+        versionName: '$(MAJOR).$(MINOR).$(PATCH)-dev'
+        # versionName: '$(version-name)-dev'
         ${{ if eq(variables['release'],true) }}:
-          versionName: '$(version-name)'
+          versionName: '$(MAJOR).$(MINOR).$(PATCH)'
 
     - task: SonarQubePrepare@4
       inputs:
@@ -247,6 +247,12 @@ stages:
 - stage: AppCenterRelease
   dependsOn: Build
   condition: and(succeeded(), eq(dependencies.Build.InitPipeline.outputs['checkBuildCommit.appcenter'], true))
+  variables: 
+    build: $[ dependencies.Build.InitPipeline.outputs['checkBuildCommit.build'] ]
+    debug: $[ dependencies.Build.InitPipeline.outputs['checkBuildCommit.debug'] ]
+    release: $[ dependencies.Build.InitPipeline.outputs['checkBuildCommit.release'] ]
+    appcenter: $[ dependencies.Build.InitPipeline.outputs['checkBuildCommit.appcenter'] ]
+    store: $[ dependencies.Build.InitPipeline.outputs['checkBuildCommit.store'] ]
   jobs:
     - deployment: AppCenterRelease   # name of the deployment job, A-Z, a-z, 0-9, and underscore. The word "deploy" is a keyword and is unsupported as the deployment name.
       displayName: Release to AppCenter  # friendly name to display in the UI
@@ -268,15 +274,8 @@ stages:
         runOnce:    #rolling, canary are the other strategies that are supported
           preDeploy: 
            steps:
-            - task: Bash@3
-              displayName: check pipeline variable value
-              inputs:
-                targetType: 'inline'
-                script: |
-                  echo 'Check pipeline var'
-                  echo 'publishToAppCenter: $[dependencies.Build.InitPipeline.outputs['checkBuildCommit.appcenter']]'
-                  echo 'publishToStore $[dependencies.Build.InitPipeline.outputs['checkBuildCommit.store']]'
-                failOnStderr: true
+            - script: |
+               echo "Publish to appcenter - var store $(store)"
             - task: DownloadPipelineArtifact@2
               inputs:
                 buildType: 'specific'
@@ -287,12 +286,6 @@ stages:
                 targetPath: '$(Pipeline.Workspace)'
           deploy:
             steps:
-            - script: |
-                ls -l
-                cd $(PIPELINE.WORKSPACE)/it-dgc-verificaC19-android
-                ls -l
-                cd apk
-                ls -l
             - task: AppCenterDistribute@3
               inputs:
                 serverEndpoint: 'DGC-App'
@@ -309,6 +302,12 @@ stages:
 - stage: GooglePlayTestRelease
   dependsOn: Build
   condition: and(succeeded(), eq(dependencies.Build.InitPipeline.outputs['checkBuildCommit.store'], true))
+  variables: 
+    build: $[ dependencies.Build.InitPipeline.outputs['checkBuildCommit.build'] ]
+    debug: $[ dependencies.Build.InitPipeline.outputs['checkBuildCommit.debug'] ]
+    release: $[ dependencies.Build.InitPipeline.outputs['checkBuildCommit.release'] ]
+    appcenter: $[ dependencies.Build.InitPipeline.outputs['checkBuildCommit.appcenter'] ]
+    store: $[ dependencies.Build.InitPipeline.outputs['checkBuildCommit.store'] ]
   jobs:
     - deployment: GooglePlayRelease   # name of the deployment job, A-Z, a-z, 0-9, and underscore. The word "deploy" is a keyword and is unsupported as the deployment name.
       displayName: Release to Google Play  # friendly name to display in the UI
@@ -327,16 +326,21 @@ stages:
         # variables: # several syntaxes, see specific section
       environment: AndroidStoreTest  # target environment name and optionally a resource name to record the deployment history; format: <environment-name>.<resource-name>
       strategy:
-          runOnce:    #rolling, canary are the other strategies that are supported
-            deploy:
-              steps:
-              - script: |
-                  ls -l
-                  cd $(PIPELINE.WORKSPACE)/it-dgc-verificaC19-android
-                  ls -l
-                  cd bundle
-                  ls -l
-        #     - task: GooglePlayReleaseBundle@3
+        runOnce:    #rolling, canary are the other strategies that are supported
+          preDeploy: 
+           steps:
+            - task: DownloadPipelineArtifact@2
+              inputs:
+                buildType: 'specific'
+                project: 'd8761144-9102-412a-9be9-76b96650fb00'
+                definition: '12'
+                specificBuildWithTriggering: true
+                buildVersionToDownload: 'latest'
+                targetPath: '$(Pipeline.Workspace)'
+            - script: |
+                echo "Publish to store - var store $(store)"
+
+        #   - task: GooglePlayReleaseBundle@3
         #       inputs:
         #         serviceConnection: 'verificac19-google-play'
         #         applicationId: 'it.ministerodellasalute.verificaC19'
