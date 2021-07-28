@@ -252,7 +252,7 @@ stages:
  
 - stage: AppCenterRelease
   dependsOn: Build
-  condition: and(succeeded(),eq(dependencies.Build.InitPipeline.outputs['checkBuildCommit.appcenter'], true))
+  condition: eq(dependencies.Build.outputs['InitPipeline.checkBuildCommit.appcenter'], true))
   variables: 
     build: $[ stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.build'] ]
     debug: $[ stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.debug'] ]
@@ -309,7 +309,7 @@ stages:
 
 - stage: GooglePlayTestRelease
   dependsOn: Build
-  condition: and(succeeded(), eq(dependencies.Build.InitPipeline.outputs['checkBuildCommit.store'], true))
+  condition: eq(dependencies.Build.outputs['InitPipeline.checkBuildCommit.store'], true))
   variables: 
     build: $[ stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.build'] ]
     debug: $[ stageDependencies.Build.InitPipeline.outputs['checkBuildCommit.debug'] ]
