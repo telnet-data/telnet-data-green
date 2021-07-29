@@ -126,7 +126,7 @@ stages:
     # creo le variabili dal file appConfig.json tra cui il versionName
     - task: oneLuckiDevJson2Variable@1
       inputs:
-        jsonFile: '$(Build.SourcesDirectory)/appConfig.json'
+        jsonFile: '$(Build.SourcesDirectory)/it-dgc-verificaC19-android/appConfig.json'
         shouldPrefixVariables: false
     
     - bash: |
