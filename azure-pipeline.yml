@@ -26,8 +26,6 @@ resources:
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  versionCounter: $[counter(variables['Build.SourceBranch'], 100)] 
 
 stages:
 - stage: Build
@@ -46,7 +44,6 @@ stages:
         targetType: 'inline'
         script: |
           echo "Check trigger pipeline var"
-          echo $(versionCounter) 
           echo "commit message: $(Build.SourceVersionMessage)"
           echo "##vso[task.setvariable variable=message;isOutput=true;]$(Build.SourceVersionMessage)"
           GIT_MESSAGE="$(Build.SourceVersionMessage)"
@@ -125,6 +122,12 @@ stages:
     - task: ExtractVersionFromTag@1
       inputs:
         projectFolderPath: '$(Build.SourcesDirectory)/it-dgc-verificaC19-android'
+
+    # creo le variabili dal file appConfig.json tra cui il versionName
+    - task: oneLuckiDevJson2Variable@1
+      inputs:
+        jsonFile: '$(Build.SourcesDirectory)/appConfig.json'
+        shouldPrefixVariables: false
     
     - bash: |
          echo 'message $(message)'
@@ -134,7 +137,7 @@ stages:
          echo 'appcenter $(appcenter)'
          echo 'store $(store)'
          echo '$(NUMBER_OF_COMMITS)'
-         echo '$(MAJOR).$(MINOR).$(PATCH)-dev'
+         echo '$(versionName)-dev'
 
     - task: UpdateAndroidVersionGradle@1
       displayName: UpdateVersion -dev
@@ -142,7 +145,7 @@ stages:
       inputs:
         buildGradlePath: 'it-dgc-verificaC19-android/app/build.gradle'
         versionCode: '$(NUMBER_OF_COMMITS)'
-        versionName: '$(MAJOR).$(MINOR).$(PATCH)-dev'
+        versionName: '$(versionName)-dev'
     
     - task: UpdateAndroidVersionGradle@1
       displayName: UpdateVersion Release
@@ -150,7 +153,7 @@ stages:
       inputs:
         buildGradlePath: 'it-dgc-verificaC19-android/app/build.gradle'
         versionCode: '$(NUMBER_OF_COMMITS)'
-        versionName: '$(MAJOR).$(MINOR).$(PATCH)'
+        versionName: '$(versionName)'
       
     - task: SonarQubePrepare@4
       inputs:
