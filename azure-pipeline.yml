@@ -194,10 +194,10 @@ stages:
     - task: AndroidSigning@3
       inputs:
         ${{ if eq(variables['release'], 'false') }}:
-          targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/debug/app-debug.apk'
+          apkFiles: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/debug/app-debug.apk'
           apksignerArguments: '--verbose --out $(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/debuge/app-debug.apk'
         ${{ if eq(variables['release'], 'true') }}:
-          targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/release/app-release-unsigned.apk'
+          apkFiles: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/release/app-release-unsigned.apk'
           apksignerArguments: '--verbose --out $(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/release/app-release.apk'
         zipalign: false
         apksignerKeystoreFile: 'android-c19-key.jks'
