@@ -136,20 +136,15 @@ stages:
          echo '$(NUMBER_OF_COMMITS)'
          echo '$(MAJOR).$(MINOR).$(PATCH)-dev'
 
-    - bash: |
-        ${{ if eq(variables['release'], 'false') }}:
-          echo "variable release false"
-        ${{ if eq(variables['release'], 'true') }}:
-          echo "variable release true"
-
+    - task: UpdateAndroidVersionGradle@1
       inputs:
         buildGradlePath: 'it-dgc-verificaC19-android/app/build.gradle'
         versionCode: '$(NUMBER_OF_COMMITS)'
         # versionCode: '$(versionCounter)'
-        ${{ if eq(variables['release'], 'false') }}:
+        $[ if eq(variables['release'], 'false') ]:
           versionName: '$(MAJOR).$(MINOR).$(PATCH)-dev'
         # versionName: '$(version-name)-dev'
-        ${{ if eq(variables['release'], 'true') }}:
+        $[ if eq(variables['release'], 'true') ]:
           versionName: '$(MAJOR).$(MINOR).$(PATCH)'
 
     - task: SonarQubePrepare@4
