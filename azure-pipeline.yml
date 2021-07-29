@@ -176,7 +176,7 @@ stages:
       continueOnError: true
       condition: succeeded()
     - task: Gradle@2
-      displayName: Build Release
+      displayName: Build Debug
       condition: and(succeeded(), eq(variables.release, 'false')) 
       inputs:
         gradleWrapperFile: 'it-dgc-verificaC19-android/gradlew'
