@@ -141,7 +141,8 @@ stages:
         buildGradlePath: 'it-dgc-verificaC19-android/app/build.gradle'
         versionCode: '$(NUMBER_OF_COMMITS)'
         # versionCode: '$(versionCounter)'
-        versionName: '$(MAJOR).$(MINOR).$(PATCH)-dev'
+        ${{ if eq(variables['release'],false) }}:
+          versionName: '$(MAJOR).$(MINOR).$(PATCH)-dev'
         # versionName: '$(version-name)-dev'
         ${{ if eq(variables['release'],true) }}:
           versionName: '$(MAJOR).$(MINOR).$(PATCH)'
@@ -173,7 +174,8 @@ stages:
       inputs:
         gradleWrapperFile: 'it-dgc-verificaC19-android/gradlew'
         workingDirectory: 'it-dgc-verificaC19-android'
-        tasks: 'assembleDebug'
+        ${{ if eq(variables['release'],false) }}:
+          tasks: 'assembleDebug'
         ${{ if eq(variables['release'],true) }}:
           tasks: 'assembleRelease'
         publishJUnitResults: true
@@ -191,7 +193,8 @@ stages:
 
     - task: AndroidSigning@3
       inputs:
-        targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/debug/app-debug.apk'
+        ${{ if eq(variables['release'],false) }}:
+          targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/debug/app-debug.apk'
         ${{ if eq(variables['release'],true) }}:
           targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/release/app-release.apk'
         apksignerKeystoreFile: 'android-c19-key.jks'
@@ -202,7 +205,8 @@ stages:
 
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/debug/app-debug.apk'
+        ${{ if eq(variables['release'],false) }}:
+          targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/debug/app-debug.apk'
         ${{ if eq(variables['release'],true) }}:
           targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/release/app-release.apk'
         artifact: 'apk'
@@ -296,7 +300,8 @@ stages:
                 inputs:
                   serverEndpoint: 'DGC-App'
                   appSlug: 'sogei/it-dgc-verificaC19-android'
-                  appFile: '$(Pipeline.Workspace)/apk/app-debug.apk'
+                  ${{ if eq(variables['release'],false) }}:
+                    appFile: '$(Pipeline.Workspace)/apk/app-debug.apk'
                   ${{ if eq(variables['release'],true) }}:
                     appFile: '$(Pipeline.Workspace)/apk/app-release.apk'
                   symbolsOption: 'Android'
