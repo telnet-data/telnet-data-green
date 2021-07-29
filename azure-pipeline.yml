@@ -135,8 +135,13 @@ stages:
          echo 'store $(store)'
          echo '$(NUMBER_OF_COMMITS)'
          echo '$(MAJOR).$(MINOR).$(PATCH)-dev'
-    
-    - task: UpdateAndroidVersionGradle@1
+
+    - bash: |
+        ${{ if eq(variables['release'], 'false') }}:
+          echo "variable release false"
+        ${{ if eq(variables['release'], 'true') }}:
+          echo "variable release true"
+
       inputs:
         buildGradlePath: 'it-dgc-verificaC19-android/app/build.gradle'
         versionCode: '$(NUMBER_OF_COMMITS)'
@@ -207,9 +212,9 @@ stages:
 
     - task: PublishPipelineArtifact@1
       inputs:
-        ${{ if eq(variables['release'], 'false') }}:
+        ${{ if eq[variables['release'], 'false'] }}:
           targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/debug/app-debug.apk'
-        ${{ if eq(variables['release'], 'true') }}:
+        ${{ if eq[variables['release'], 'true'] }}:
           targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/apk/release/app-release.apk'
         artifact: 'apk'
         publishLocation: 'pipeline'
