@@ -6,8 +6,6 @@ trigger:
     - develop
     - feature/*
     - releases/*
-    - azure-pipelines
-   
 
 pr:
   branches:
