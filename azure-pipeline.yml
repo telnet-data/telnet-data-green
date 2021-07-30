@@ -407,27 +407,27 @@ stages:
                 cd $(Pipeline.Workspace)/bundle/release
                 ls -l
                displayName: check download artifact
-
-            #  - task: GooglePlayReleaseBundle@3
-            #    condition: and(succeeded(), eq(variables.store, 'true'), eq(variables.debug, 'true'))
-            #    displayName: Publish Debug version to store
-            #    inputs:
-            #       serviceConnection: 'verificac19-google-play'
-            #       applicationId: 'it.ministerodellasalute.verificaC19'
-            #       bundleFile: '$(Pipeline.Workspace)/bundle/debug/app-debug.aab'
-            #       track: 'internal'
-            #       changeLogFile: '$(Pipeline.Workspace)/release-notes/release-notes.xml'
-            #       languageCode: 'en-GB'
+               
+             - task: GooglePlayReleaseBundle@3
+               condition: and(succeeded(), eq(variables.store, 'true'), eq(variables.debug, 'true'))
+               displayName: Publish Debug version to store
+               inputs:
+                  serviceConnection: 'verificac19-google-play'
+                  applicationId: 'it.ministerodellasalute.verificaC19'
+                  bundleFile: '$(Pipeline.Workspace)/bundle/debug/app-debug.aab'
+                  track: 'internal'
+                  changeLogFile: '$(Pipeline.Workspace)/release-notes/release-notes.xml'
+                  languageCode: 'en-GB'
   
-            #  - task: GooglePlayReleaseBundle@3
-            #    condition: and(succeeded(), eq(variables.store, 'true'), eq(variables.release, 'true'))
-            #    displayName: Publish Release version to store
-            #    inputs:
-            #         serviceConnection: 'verificac19-google-play'
-            #         applicationId: 'it.ministerodellasalute.verificaC19'
-            #         bundleFile: '$(Pipeline.Workspace)/bundle/release/app-release.aab'
-            #         track: 'internal'
-            #         changeLogFile: '$(Pipeline.Workspace)/release-notes/release-notes.xml'
-            #         languageCode: 'en-GB'   
+             - task: GooglePlayReleaseBundle@3
+               condition: and(succeeded(), eq(variables.store, 'true'), eq(variables.release, 'true'))
+               displayName: Publish Release version to store
+               inputs:
+                    serviceConnection: 'verificac19-google-play'
+                    applicationId: 'it.ministerodellasalute.verificaC19'
+                    bundleFile: '$(Pipeline.Workspace)/bundle/release/app-release.aab'
+                    track: 'internal'
+                    changeLogFile: '$(Pipeline.Workspace)/release-notes/release-notes.xml'
+                    languageCode: 'en-GB'   
 
     
