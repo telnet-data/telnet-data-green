@@ -380,9 +380,9 @@ stages:
             steps:
              - script: |
                 echo "deploy to store - var store $(store)"
-
-        #   - task: GooglePlayReleaseBundle@3
-        #       inputs:
+                ls -l
+        #    - task: GooglePlayReleaseBundle@3
+        #      inputs:
         #         serviceConnection: 'verificac19-google-play'
         #         applicationId: 'it.ministerodellasalute.verificaC19'
         #         bundleFile: '$(Pipeline.Workspace)/bundle/app-release.aab'
