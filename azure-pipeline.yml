@@ -99,8 +99,7 @@ stages:
          echo 'release $(checkBuildCommit.release)'
          echo 'appcenter $(checkBuildCommit.appcenter)'
          echo 'store $(checkBuildCommit.store)'
-    #     echo '$(NUMBER_OF_COMMITS)'
-    #     echo '$(MAJOR).$(MINOR).$(PATCH)-dev'
+      displayName: check variables
 
   - job: BuildApk
     dependsOn: InitPipeline
@@ -126,7 +125,8 @@ stages:
       inputs:
         jsonFile: '$(Build.SourcesDirectory)/it-dgc-verificaC19-android/appConfig.json'
         shouldPrefixVariables: false
-    
+      displayName: set variable name from appConfig.json
+
     - bash: |
          echo 'message $(message)'
          echo 'build $(build)'
@@ -136,6 +136,7 @@ stages:
          echo 'store $(store)'
          echo '$(NUMBER_OF_COMMITS)'
          echo '$(versionName)-dev'
+      displayName: check variables
 
     - task: UpdateAndroidVersionGradle@1
       displayName: UpdateVersion -dev
@@ -241,8 +242,22 @@ stages:
         artifact: 'apk'
         publishLocation: 'pipeline'
 
-    # verificare eventuali condizioni sui rami per eseguire questo step (ad esempio non sulla feature, ma solo su develop e release?)
     - task: Gradle@2
+      displayName: build aab debug 
+      inputs:
+        gradleWrapperFile: 'it-dgc-verificaC19-android/gradlew'
+        workingDirectory: 'it-dgc-verificaC19-android'
+        tasks: ':app:bundleDebug'
+        publishJUnitResults: false
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.8'
+        gradleOptions: '-Xmx3072m'
+        sonarQubeRunAnalysis: false
+        spotBugsAnalysis: false
+      condition: and(succeeded(), eq(variables.store, 'true'), eq(variables.debug, 'true'))
+
+    - task: Gradle@2
+      displayName: build aab release 
       inputs:
         gradleWrapperFile: 'it-dgc-verificaC19-android/gradlew'
         workingDirectory: 'it-dgc-verificaC19-android'
@@ -253,14 +268,28 @@ stages:
         gradleOptions: '-Xmx3072m'
         sonarQubeRunAnalysis: false
         spotBugsAnalysis: false
-      condition: and(succeeded(), eq(variables.store, 'true'))
+      condition: and(succeeded(), eq(variables.store, 'true'), eq(variables.release, 'true'))
+
 
     - task: CopyFiles@2
       inputs:
         contents: '**/*.aab'
         targetFolder: '$(build.artifactStagingDirectory)'
       condition: and(succeeded(), eq(variables.store, 'true'))
+  
     - task: AndroidSigning@2
+      displayName: sign aab debug 
+      inputs:
+        apkFiles: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/bundle/debug/app-debug.aab'
+        jarsignerKeystoreFile: 'android-c19-key.jks'
+        jarsignerKeystorePassword: '$(keystorepassword)'
+        jarsignerKeystoreAlias: '$(keystorealias)'
+        jarsignerKeyPassword: '$(keystorepassword)'
+        jarsignerArguments: '-sigalg SHA256withRSA -digestalg SHA-256'
+      condition: and(succeeded(), eq(variables.store, 'true'), eq(variables.debug, 'true'))
+    
+    - task: AndroidSigning@2
+      displayName: sign aab release 
       inputs:
         apkFiles: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/bundle/release/app-release.aab'
         jarsignerKeystoreFile: 'android-c19-key.jks'
@@ -268,11 +297,11 @@ stages:
         jarsignerKeystoreAlias: '$(keystorealias)'
         jarsignerKeyPassword: '$(keystorepassword)'
         jarsignerArguments: '-sigalg SHA256withRSA -digestalg SHA-256'
-      condition: and(succeeded(), eq(variables.store, 'true'))
+      condition: and(succeeded(), eq(variables.store, 'true'), eq(variables.release, 'true'))
     
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/bundle/release/app-release.aab'
+        targetPath: '$(build.artifactStagingDirectory)/it-dgc-verificaC19-android/app/build/outputs/bundle'
         artifact: 'bundle'
         publishLocation: 'pipeline'
       condition: and(succeeded(), eq(variables.store, 'true'))
@@ -367,18 +396,36 @@ stages:
                 echo 'release $(release)'
                 echo 'appcenter $(appcenter)'
                 echo 'store $(store)'
-                
+              displayName: check variables
+
           deploy:
             steps:
              - script: |
                 echo "deploy to store - var store $(store)"
                 cd $(Pipeline.Workspace)/bundle
                 ls -l
-        #    - task: GooglePlayReleaseBundle@3
-        #      inputs:
-        #         serviceConnection: 'verificac19-google-play'
-        #         applicationId: 'it.ministerodellasalute.verificaC19'
-        #         bundleFile: '$(Pipeline.Workspace)/bundle/app-release.aab'
-        #         track: 'internal'
-        #         changeLogFile: '$(Pipeline.Workspace)/release-notes/release-notes.xml'
-        #         languageCode: 'en-GB'      
+               displayName: check download artifact
+
+            #  - task: GooglePlayReleaseBundle@3
+            #    condition: and(succeeded(), eq(variables.store, 'true'), eq(variables.debug, 'true'))
+            #    displayName: Publish Debug version to store
+            #    inputs:
+            #       serviceConnection: 'verificac19-google-play'
+            #       applicationId: 'it.ministerodellasalute.verificaC19'
+            #       bundleFile: '$(Pipeline.Workspace)/bundle/app-debug.aab'
+            #       track: 'internal'
+            #       changeLogFile: '$(Pipeline.Workspace)/release-notes/release-notes.xml'
+            #       languageCode: 'en-GB'
+  
+            #  - task: GooglePlayReleaseBundle@3
+            #    condition: and(succeeded(), eq(variables.store, 'true'), eq(variables.release, 'true'))
+            #    displayName: Publish Release version to store
+            #    inputs:
+            #         serviceConnection: 'verificac19-google-play'
+            #         applicationId: 'it.ministerodellasalute.verificaC19'
+            #         bundleFile: '$(Pipeline.Workspace)/bundle/app-release.aab'
+            #         track: 'internal'
+            #         changeLogFile: '$(Pipeline.Workspace)/release-notes/release-notes.xml'
+            #         languageCode: 'en-GB'   
+
+    
