@@ -345,7 +345,7 @@ stages:
                   echo "deploy deploy to appcenter - var appcenter $(appcenter)"
               - task: AppCenterDistribute@3
                 displayName: AppCenter debug Distribute
-                condition: and(succeeded(), eq(variables.release, 'false')) 
+                condition: and(succeeded(), eq(variables.debug, 'true')) 
                 inputs:
                   serverEndpoint: 'DGC-App'
                   appSlug: 'sogei/it-dgc-verificaC19-android'
@@ -402,7 +402,9 @@ stages:
             steps:
              - script: |
                 echo "deploy to store - var store $(store)"
-                cd $(Pipeline.Workspace)/bundle
+                cd $(Pipeline.Workspace)/bundle/debug
+                ls -l
+                cd $(Pipeline.Workspace)/bundle/release
                 ls -l
                displayName: check download artifact
 
@@ -412,7 +414,7 @@ stages:
             #    inputs:
             #       serviceConnection: 'verificac19-google-play'
             #       applicationId: 'it.ministerodellasalute.verificaC19'
-            #       bundleFile: '$(Pipeline.Workspace)/bundle/app-debug.aab'
+            #       bundleFile: '$(Pipeline.Workspace)/bundle/debug/app-debug.aab'
             #       track: 'internal'
             #       changeLogFile: '$(Pipeline.Workspace)/release-notes/release-notes.xml'
             #       languageCode: 'en-GB'
@@ -423,7 +425,7 @@ stages:
             #    inputs:
             #         serviceConnection: 'verificac19-google-play'
             #         applicationId: 'it.ministerodellasalute.verificaC19'
-            #         bundleFile: '$(Pipeline.Workspace)/bundle/app-release.aab'
+            #         bundleFile: '$(Pipeline.Workspace)/bundle/release/app-release.aab'
             #         track: 'internal'
             #         changeLogFile: '$(Pipeline.Workspace)/release-notes/release-notes.xml'
             #         languageCode: 'en-GB'   
