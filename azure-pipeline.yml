@@ -367,15 +367,7 @@ stages:
                 echo 'release $(release)'
                 echo 'appcenter $(appcenter)'
                 echo 'store $(store)'
-            - task: DownloadPipelineArtifact@2
-              inputs:
-                buildType: 'specific'
-                project: 'd8761144-9102-412a-9be9-76b96650fb00'
-                definition: '12'
-                specificBuildWithTriggering: true
-                buildVersionToDownload: 'latest'
-                targetPath: '$(Pipeline.Workspace)'
-            
+                
           deploy:
             steps:
              - script: |
