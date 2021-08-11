@@ -33,19 +33,25 @@ object Versions {
     const val androidx_material = "1.3.0"
     const val androidx_constraint = "2.0.4"
     const val kotlinx_coroutines = "1.3.9"
+    const val kotlinx_coroutines_core = "1.5.1"
     private const val work_hilt = "1.0.0-beta01"
     const val androidx_hilt_viewmodel = "1.0.0-alpha02"
     const val androidx_hilt_work = work_hilt
     const val androidx_hilt_compiler = work_hilt
     const val androidx_room = "2.3.0"
+    const val androidx_lifecycle_livedata_ktx = "2.4.0-alpha02"
+    const val room_ktx = "2.4.0-alpha03"
     const val androidx_worker_ktx = "2.5.0"
     const val hilt_version = "2.33-beta"
     const val retrofit = "2.9.0"
     const val logging_interceptor = "4.0.1"
     const val gson_converter = "2.6.0"
 
+    const val android_tools_desugar_jdk_libs_version = "1.1.5"
+
     // QR
     const val zxing = "4.2.0"
+    const val zxing_core = "3.3.0"
     const val guave_conflict_resolver_version = "9999.0-empty-to-avoid-conflict-with-guava"
 
     // Decoder
@@ -53,6 +59,9 @@ object Versions {
     const val jackson_cbor = "2.12.3"
     const val java_cose = "1.1.0"
     const val bouncy_castle = "1.68"
+    const val jackson_kotlin = "2.12.0"
+    const val jackson_datetype = "jackson-datatype-jsr310"
+    const val appache_commons = "2.9.0"
 
     // Validation
     const val json_validation = "2.2.14"
@@ -62,4 +71,9 @@ object Versions {
     const val junit = "4.13.1"
     const val junit_jupiter = "5.7.1"
     const val hamcrest = "2.2"
+    const val test_version = "1.3.0"
+    const val test_ext_version = "1.1.2"
+
+    const val mockito_core = "3.9.0"
+    const val mockito_kotlin = "3.2.0"
 }
