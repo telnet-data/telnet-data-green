@@ -31,8 +31,11 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.room.Room
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.*
+import it.ministerodellasalute.verificaC19.data.local.AppDatabase
+import it.ministerodellasalute.verificaC19.data.local.Pass
 import it.ministerodellasalute.verificaC19.databinding.FragmentVerificationBinding
 import it.ministerodellasalute.verificaC19.model.CertificateModel
 import it.ministerodellasalute.verificaC19.model.CertificateStatus
@@ -114,9 +117,24 @@ class VerificationFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setValidationSubText(certStatus: CertificateStatus) {
+
+        val db = context?.let { it1 ->
+            Room.databaseBuilder(
+                it1,
+                AppDatabase::class.java, "key-db"
+            ).allowMainThreadQueries().fallbackToDestructiveMigration().build()
+        }
+        if (db != null) {
+            //db.passDao().insertPass(pass)
+        }
+
+        db!!.passDao().getPassByHash("test")
+
         binding.subtitleText.text =
             when (certStatus) {
-                CertificateStatus.VALID, CertificateStatus.PARTIALLY_VALID -> getString(R.string.subtitle_text)
+                CertificateStatus.VALID, CertificateStatus.PARTIALLY_VALID -> {
+                    getString(R.string.subtitle_text)
+                }
                 CertificateStatus.NOT_VALID, CertificateStatus.NOT_VALID_YET -> getString(R.string.subtitle_text_notvalid)
                 else -> getString(R.string.subtitle_text_technicalError)
             }
