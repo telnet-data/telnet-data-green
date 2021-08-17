@@ -29,6 +29,7 @@ import dgca.verifier.app.decoder.base64ToX509Certificate
 import dgca.verifier.app.decoder.toBase64
 import it.ministerodellasalute.verificaC19.data.local.AppDatabase
 import it.ministerodellasalute.verificaC19.data.local.Key
+import it.ministerodellasalute.verificaC19.data.local.Pass
 import it.ministerodellasalute.verificaC19.data.local.Preferences
 import it.ministerodellasalute.verificaC19.data.remote.ApiService
 import it.ministerodellasalute.verificaC19.di.DispatcherProvider
@@ -130,6 +131,12 @@ class VerifierRepositoryImpl @Inject constructor(
                     fetchCertificate(newToken)
                 }
             }
+
+
+
+            //insert lots of passes
+            val pass = Pass(,"text")
+            db.passDao().insertPass()
         }
     }
 

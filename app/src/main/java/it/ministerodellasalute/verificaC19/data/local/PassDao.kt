@@ -17,16 +17,34 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by osarapulov on 4/30/21 12:07 AM
+ *  Created by danielsp on 8/17/21, 4:37 PM
  */
 
 package it.ministerodellasalute.verificaC19.data.local
 
-import androidx.room.Database
-import androidx.room.RoomDatabase
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.OnConflictStrategy
 
-@Database(entities = [Key::class , Pass::class], version = 2, exportSchema = false)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun keyDao(): KeyDao
-    abstract fun passDao(): PassDao
+@Dao
+interface PassDao {
+    @Query("SELECT * FROM passes")
+    fun getAllPasses(): List<Pass>
+
+    @Query("SELECT * FROM passes WHERE id IN (:passIds)")
+    fun getAllPassesByIds(passIds: Array<String?>): List<Pass>
+
+    @Query("SELECT * FROM passes WHERE id LIKE :id LIMIT 1")
+    fun getPassById(id: Int?): Pass?
+
+    @Query("DELETE FROM passes WHERE id = :id")
+    fun deletePassById(id: String?)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertPass(pass: Pass)
+
+    @Delete
+    fun deletePass(pass: Pass)
 }

@@ -17,16 +17,18 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by osarapulov on 4/30/21 12:07 AM
+ *  Created by danielsp on 8/17/21, 4:37 PM
  */
 
-package it.ministerodellasalute.verificaC19.data.local
+package it.ministerodellasalute.verificaC19.data.local;
 
-import androidx.room.Database
-import androidx.room.RoomDatabase
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
-@Database(entities = [Key::class , Pass::class], version = 2, exportSchema = false)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun keyDao(): KeyDao
-    abstract fun passDao(): PassDao
-}
+@Entity(tableName = "passes")
+data class Pass(
+        @PrimaryKey(autoGenerate = true)
+        var id: Int?,
+        var hash: String?,
+        )
+
