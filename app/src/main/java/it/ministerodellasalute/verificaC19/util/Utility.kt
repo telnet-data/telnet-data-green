@@ -22,6 +22,8 @@
 
 package it.ministerodellasalute.verificaC19.util
 
+import java.security.MessageDigest
+
 object Utility {
     fun versionCompare(v1: String, v2: String): Int {
         // vnum stores each numeric part of version
@@ -54,6 +56,17 @@ object Utility {
             j++
         }
         return 0
+    }
+
+    fun String.sha256(): String {
+        return hashString(this, "SHA-256")
+    }
+
+    private fun hashString(input: String, algorithm: String): String {
+        return MessageDigest
+            .getInstance(algorithm)
+            .digest(input.toByteArray())
+            .fold("", { str, it -> str + "%02x".format(it) })
     }
 
 }

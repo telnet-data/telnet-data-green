@@ -39,6 +39,9 @@ interface PassDao {
     @Query("SELECT * FROM passes WHERE id LIKE :id LIMIT 1")
     fun getPassById(id: Int?): Pass?
 
+    @Query("SELECT * FROM passes WHERE hash LIKE :hash LIMIT 1")
+    fun getPassByHash(hash: String?): Pass?
+
     @Query("DELETE FROM passes WHERE id = :id")
     fun deletePassById(id: String?)
 

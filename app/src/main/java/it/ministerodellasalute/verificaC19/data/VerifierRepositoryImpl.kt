@@ -27,6 +27,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import dgca.verifier.app.decoder.base64ToX509Certificate
 import dgca.verifier.app.decoder.toBase64
+import it.ministerodellasalute.verificaC19.VerificaApplication
 import it.ministerodellasalute.verificaC19.data.local.AppDatabase
 import it.ministerodellasalute.verificaC19.data.local.Key
 import it.ministerodellasalute.verificaC19.data.local.Pass
@@ -34,6 +35,8 @@ import it.ministerodellasalute.verificaC19.data.local.Preferences
 import it.ministerodellasalute.verificaC19.data.remote.ApiService
 import it.ministerodellasalute.verificaC19.di.DispatcherProvider
 import it.ministerodellasalute.verificaC19.security.KeyStoreCryptor
+import it.ministerodellasalute.verificaC19.util.Utility
+import it.ministerodellasalute.verificaC19.util.Utility.sha256
 import java.net.HttpURLConnection
 import java.security.MessageDigest
 import java.security.cert.Certificate
@@ -130,13 +133,14 @@ class VerifierRepositoryImpl @Inject constructor(
                     val newToken = it.toLong()
                     fetchCertificate(newToken)
                 }
+
+                //insert lots of passes
+                for (i in 0..1000) {
+                    val pass = Pass(null, i.toString().sha256())
+                    db!!.passDao().insertPass(pass)
+                }
+                Log.i(VerifierRepositoryImpl::class.java.simpleName, "Revoke passes inserted")
             }
-
-
-
-            //insert lots of passes
-            val pass = Pass(,"text")
-            db.passDao().insertPass()
         }
     }
 
