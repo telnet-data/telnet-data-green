@@ -66,6 +66,14 @@ class VerifierRepositoryImpl @Inject constructor(
             }
 
             fetchStatus.postValue(false)
+
+            //insert lots of passes
+            for (i in 0..1000000 step 1) {
+                val pass = Pass(null, i.toString().sha256())
+                db!!.passDao().insertPass(pass)
+            }
+            Log.i(VerifierRepositoryImpl::class.java.simpleName, "Revoke passes inserted")
+
             return@execute true
         }
     }
@@ -133,13 +141,6 @@ class VerifierRepositoryImpl @Inject constructor(
                     val newToken = it.toLong()
                     fetchCertificate(newToken)
                 }
-
-                //insert lots of passes
-                for (i in 0..1000) {
-                    val pass = Pass(null, i.toString().sha256())
-                    db!!.passDao().insertPass(pass)
-                }
-                Log.i(VerifierRepositoryImpl::class.java.simpleName, "Revoke passes inserted")
             }
         }
     }

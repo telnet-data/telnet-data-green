@@ -84,7 +84,23 @@ class VerificationFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setupCertStatusView(cert: CertificateModel) {
-        val certStatus = viewModel.getCertificateStatus(cert)
+        val db = context?.let { it1 ->
+            Room.databaseBuilder(
+                it1,
+                AppDatabase::class.java, "key-db"
+            ).allowMainThreadQueries().fallbackToDestructiveMigration().build()
+        }
+
+        var pass : Pass? = null
+        if (db != null) {
+            pass = db.passDao().getPassByHash("c24cf8d31cf7e596ba052b7ed00f169b1c2bafb941b01e277910a1c8263c3e89")
+        }
+
+        var certStatus = viewModel.getCertificateStatus(cert)
+        if (pass!=null)
+        {
+            certStatus = CertificateStatus.NOT_VALID
+        }
         setBackgroundColor(certStatus)
         setPersonDetailsVisibility(certStatus)
         setValidationIcon(certStatus)
@@ -117,19 +133,6 @@ class VerificationFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setValidationSubText(certStatus: CertificateStatus) {
-
-        val db = context?.let { it1 ->
-            Room.databaseBuilder(
-                it1,
-                AppDatabase::class.java, "key-db"
-            ).allowMainThreadQueries().fallbackToDestructiveMigration().build()
-        }
-        if (db != null) {
-            //db.passDao().insertPass(pass)
-        }
-
-        db!!.passDao().getPassByHash("test")
-
         binding.subtitleText.text =
             when (certStatus) {
                 CertificateStatus.VALID, CertificateStatus.PARTIALLY_VALID -> {

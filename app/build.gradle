@@ -94,7 +94,7 @@ android {
         targetSdkVersion Config.targetSdk
         versionCode 571
         versionName "1.1.0"
-        testInstrumentationRunner Config.androidTestInstrumentation
+        //testInstrumentationRunner Config.androidTestInstrumentation
     }
 
     buildTypes {
