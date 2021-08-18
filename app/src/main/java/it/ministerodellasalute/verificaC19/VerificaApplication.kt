@@ -23,6 +23,7 @@
 package it.ministerodellasalute.verificaC19
 
 import android.app.Application
+import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.*
 import dagger.hilt.android.HiltAndroidApp
@@ -32,6 +33,19 @@ import javax.inject.Inject
 
 @HiltAndroidApp
 class VerificaApplication : Application(), Configuration.Provider {
+
+    init {
+        instance = this
+    }
+
+    companion object {
+        private var instance: VerificaApplication? = null
+
+        fun applicationContext() : Context {
+            return instance!!.applicationContext
+        }
+    }
+
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
@@ -45,6 +59,9 @@ class VerificaApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         setWorkManager()
+
+        val context: Context = VerificaApplication.applicationContext()
+
     }
 
     private fun setWorkManager(){
