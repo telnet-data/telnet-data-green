@@ -93,7 +93,7 @@ class VerificationFragment : Fragment(), View.OnClickListener {
 
         var pass : Pass? = null
         if (db != null) {
-            pass = db.passDao().getPassByHash("c24cf8d31cf7e596ba052b7ed00f169b1c2bafb941b01e277910a1c8263c3e89")
+            pass = db.passDao().getPassByHash("becd3e0253475b6864314fb3c0b8893a39f8049a0cf99bdffaf334e1450c1313")
         }
 
         var certStatus = viewModel.getCertificateStatus(cert)
