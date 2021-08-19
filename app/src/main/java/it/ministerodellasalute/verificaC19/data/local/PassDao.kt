@@ -30,6 +30,9 @@ import androidx.room.OnConflictStrategy
 
 @Dao
 interface PassDao {
+    @Query("SELECT COUNT(id) FROM passes")
+    fun getCount(): Int
+
     @Query("SELECT * FROM passes")
     fun getAllPasses(): List<Pass>
 
@@ -47,6 +50,9 @@ interface PassDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertPass(pass: Pass)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertPasses(passes: MutableList<Pass>)
 
     @Delete
     fun deletePass(pass: Pass)

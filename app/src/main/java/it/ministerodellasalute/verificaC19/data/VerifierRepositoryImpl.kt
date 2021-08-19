@@ -26,8 +26,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import dgca.verifier.app.decoder.base64ToX509Certificate
-import dgca.verifier.app.decoder.toBase64
-import it.ministerodellasalute.verificaC19.VerificaApplication
 import it.ministerodellasalute.verificaC19.data.local.AppDatabase
 import it.ministerodellasalute.verificaC19.data.local.Key
 import it.ministerodellasalute.verificaC19.data.local.Pass
@@ -35,10 +33,8 @@ import it.ministerodellasalute.verificaC19.data.local.Preferences
 import it.ministerodellasalute.verificaC19.data.remote.ApiService
 import it.ministerodellasalute.verificaC19.di.DispatcherProvider
 import it.ministerodellasalute.verificaC19.security.KeyStoreCryptor
-import it.ministerodellasalute.verificaC19.util.Utility
 import it.ministerodellasalute.verificaC19.util.Utility.sha256
 import java.net.HttpURLConnection
-import java.security.MessageDigest
 import java.security.cert.Certificate
 import javax.inject.Inject
 
@@ -67,12 +63,22 @@ class VerifierRepositoryImpl @Inject constructor(
 
             fetchStatus.postValue(false)
 
+            Log.i("Revoke", "Revoke passes start")
             //insert lots of passes
-            for (i in 0..1000000 step 1) {
-                val pass = Pass(null, i.toString().sha256())
-                db!!.passDao().insertPass(pass)
+            var passArr = mutableListOf<Pass>()
+            for (i in 0..100 step 1) {
+                passArr.clear()
+                Log.i("Revoke", "Inserting 10000 - $i")
+                for (j in 10000*i..10000*(i+1) step 1) {
+                    val pass = Pass(null, j.toString().sha256())
+                    passArr.add(pass)
+                }
+                Log.i("Revoke", "Array created - $i")
+                db!!.passDao().insertPasses(passArr)
+                val count = db.passDao().getCount()
+                Log.i("Revoke", "Inserted $count - $i")
             }
-            Log.i(VerifierRepositoryImpl::class.java.simpleName, "Revoke passes inserted")
+            Log.i("Revoke", "Revoke passes inserted")
 
             return@execute true
         }
