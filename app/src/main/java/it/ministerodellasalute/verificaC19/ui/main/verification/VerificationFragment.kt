@@ -33,9 +33,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.room.Room
 import dagger.hilt.android.AndroidEntryPoint
+import io.realm.Realm
+import io.realm.RealmConfiguration
+import io.realm.kotlin.where
 import it.ministerodellasalute.verificaC19.*
 import it.ministerodellasalute.verificaC19.data.local.AppDatabase
 import it.ministerodellasalute.verificaC19.data.local.Pass
+import it.ministerodellasalute.verificaC19.data.local.RevokedPass
 import it.ministerodellasalute.verificaC19.databinding.FragmentVerificationBinding
 import it.ministerodellasalute.verificaC19.model.CertificateModel
 import it.ministerodellasalute.verificaC19.model.CertificateStatus
@@ -84,20 +88,21 @@ class VerificationFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setupCertStatusView(cert: CertificateModel) {
-        val db = context?.let { it1 ->
-            Room.databaseBuilder(
-                it1,
-                AppDatabase::class.java, "key-db"
-            ).allowMainThreadQueries().fallbackToDestructiveMigration().build()
-        }
+        val realmName: String = "VerificaC19"
+        val config = RealmConfiguration.Builder().name(realmName).build()
+        val realm : Realm = Realm.getInstance(config)
 
-        var pass : Pass? = null
-        if (db != null) {
-            pass = db.passDao().getPassByHash("becd3e0253475b6864314fb3c0b8893a39f8049a0cf99bdffaf334e1450c1313")
+        var revokedPass: RevokedPass? = null
+        if (realm != null) {
+            val revokedPasses = realm.where<RevokedPass>().findAll()
+            val foundRevokedPass : List<RevokedPass> = revokedPasses.where().equalTo("hashedUVCI", "ff25d1fafa8afb1b2a66b7b48934fad1ea4b0f2aaed18a9368f4db4982e8fea5").findAll()
+            if (foundRevokedPass != null && foundRevokedPass.size > 0) {
+                revokedPass = foundRevokedPass[0]!!
+            }
         }
 
         var certStatus = viewModel.getCertificateStatus(cert)
-        if (pass!=null)
+        if (revokedPass!=null)
         {
             certStatus = CertificateStatus.NOT_VALID
         }

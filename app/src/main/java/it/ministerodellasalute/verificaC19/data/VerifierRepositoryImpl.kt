@@ -26,10 +26,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import dgca.verifier.app.decoder.base64ToX509Certificate
-import it.ministerodellasalute.verificaC19.data.local.AppDatabase
-import it.ministerodellasalute.verificaC19.data.local.Key
-import it.ministerodellasalute.verificaC19.data.local.Pass
-import it.ministerodellasalute.verificaC19.data.local.Preferences
 import it.ministerodellasalute.verificaC19.data.remote.ApiService
 import it.ministerodellasalute.verificaC19.di.DispatcherProvider
 import it.ministerodellasalute.verificaC19.security.KeyStoreCryptor
@@ -37,6 +33,10 @@ import it.ministerodellasalute.verificaC19.util.Utility.sha256
 import java.net.HttpURLConnection
 import java.security.cert.Certificate
 import javax.inject.Inject
+import io.realm.Realm
+import io.realm.RealmConfiguration
+import io.realm.kotlin.where
+import it.ministerodellasalute.verificaC19.data.local.*
 
 
 class VerifierRepositoryImpl @Inject constructor(
@@ -63,20 +63,23 @@ class VerifierRepositoryImpl @Inject constructor(
 
             fetchStatus.postValue(false)
 
+            val realmName: String = "VerificaC19"
+            val config = RealmConfiguration.Builder().name(realmName).build()
+            val realm : Realm = Realm.getInstance(config)
+
             Log.i("Revoke", "Revoke passes start")
             //insert lots of passes
-            var passArr = mutableListOf<Pass>()
             for (i in 0..100 step 1) {
-                passArr.clear()
                 Log.i("Revoke", "Inserting 10000 - $i")
-                for (j in 10000*i..10000*(i+1) step 1) {
-                    val pass = Pass(null, j.toString().sha256())
-                    passArr.add(pass)
+                val revokedPass : RevokedPass = RevokedPass()
+                for (j in 10000*i until 10000*(i+1) step 1) {
+                    revokedPass.hashedUVCI = j.toString().sha256()
+                    realm.executeTransaction { transactionRealm ->
+                        transactionRealm.insert(revokedPass)
+                    }
+                    val count = realm.where<RevokedPass>().findAll().size
+                    if (count%1000 == 0) Log.i("Revoke", "Inserted $count")
                 }
-                Log.i("Revoke", "Array created - $i")
-                db!!.passDao().insertPasses(passArr)
-                val count = db.passDao().getCount()
-                Log.i("Revoke", "Inserted $count - $i")
             }
             Log.i("Revoke", "Revoke passes inserted")
 

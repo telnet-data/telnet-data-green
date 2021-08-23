@@ -30,6 +30,7 @@ import dagger.hilt.android.HiltAndroidApp
 import it.ministerodellasalute.verificaC19.worker.LoadKeysWorker
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import io.realm.Realm
 
 @HiltAndroidApp
 class VerificaApplication : Application(), Configuration.Provider {
@@ -61,7 +62,7 @@ class VerificaApplication : Application(), Configuration.Provider {
         setWorkManager()
 
         val context: Context = VerificaApplication.applicationContext()
-
+        Realm.init(this)
     }
 
     private fun setWorkManager(){
