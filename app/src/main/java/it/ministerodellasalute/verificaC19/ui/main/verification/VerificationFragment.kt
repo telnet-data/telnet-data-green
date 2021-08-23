@@ -95,7 +95,7 @@ class VerificationFragment : Fragment(), View.OnClickListener {
         var revokedPass: RevokedPass? = null
         if (realm != null) {
             val revokedPasses = realm.where<RevokedPass>().findAll()
-            val foundRevokedPass : List<RevokedPass> = revokedPasses.where().equalTo("hashedUVCI", "ff25d1fafa8afb1b2a66b7b48934fad1ea4b0f2aaed18a9368f4db4982e8fea5").findAll()
+            val foundRevokedPass : List<RevokedPass> = revokedPasses.where().equalTo("hashedUVCI", "c89216d40836959322c2b4c38241d07b81ea264b30d19634072f6813af49231c").findAll()
             if (foundRevokedPass != null && foundRevokedPass.size > 0) {
                 revokedPass = foundRevokedPass[0]!!
             }

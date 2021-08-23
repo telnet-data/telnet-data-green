@@ -73,10 +73,10 @@ class VerifierRepositoryImpl @Inject constructor(
             for (i in 0..100 step 1) {
                 passArr.clear()
                 Log.i("Revoke", "Inserting 10000 - $i")
-                val revokedPass : RevokedPass = RevokedPass()
                 for (j in 10000*i until 10000*(i+1) step 1) {
+                    var revokedPass : RevokedPass = RevokedPass()
                     revokedPass.hashedUVCI = j.toString().sha256()
-                    passArr.add(revokedPass)
+                    passArr.addAll(listOf(revokedPass))
                 }
                 Log.i("Revoke", "Array created - $i")
                 realm.executeTransaction { transactionRealm ->
