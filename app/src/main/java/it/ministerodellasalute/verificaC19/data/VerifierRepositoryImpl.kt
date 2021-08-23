@@ -69,17 +69,21 @@ class VerifierRepositoryImpl @Inject constructor(
 
             Log.i("Revoke", "Revoke passes start")
             //insert lots of passes
+            var passArr = mutableListOf<RevokedPass>()
             for (i in 0..100 step 1) {
+                passArr.clear()
                 Log.i("Revoke", "Inserting 10000 - $i")
                 val revokedPass : RevokedPass = RevokedPass()
                 for (j in 10000*i until 10000*(i+1) step 1) {
                     revokedPass.hashedUVCI = j.toString().sha256()
-                    realm.executeTransaction { transactionRealm ->
-                        transactionRealm.insert(revokedPass)
-                    }
-                    val count = realm.where<RevokedPass>().findAll().size
-                    if (count%1000 == 0) Log.i("Revoke", "Inserted $count")
+                    passArr.add(revokedPass)
                 }
+                Log.i("Revoke", "Array created - $i")
+                realm.executeTransaction { transactionRealm ->
+                    transactionRealm.insert(passArr)
+                }
+                val count = realm.where<RevokedPass>().findAll().size
+                Log.i("Revoke", "Inserted $count - $i")
             }
             Log.i("Revoke", "Revoke passes inserted")
 
