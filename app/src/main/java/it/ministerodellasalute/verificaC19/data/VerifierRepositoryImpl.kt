@@ -35,7 +35,7 @@ import java.security.cert.Certificate
 import javax.inject.Inject
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import io.realm.kotlin.where
+import io.realm.kotlin.*
 import it.ministerodellasalute.verificaC19.data.local.*
 
 
@@ -86,7 +86,22 @@ class VerifierRepositoryImpl @Inject constructor(
                 Log.i("Revoke", "Inserted $count - $i")
             }
             Log.i("Revoke", "Revoke passes inserted")
-
+            var hashedUVCIListToDelete = mutableListOf<String>()
+            Log.i("Revoke", "Inserting record to delete")
+            for (i in 0..1000000 step 100) {
+                hashedUVCIListToDelete.addAll(listOf(i.toString().sha256()))
+            }
+            var hashedUVCIListToDeleteArray = hashedUVCIListToDelete.toTypedArray()
+            Log.i("Revoke", "Array to delete created")
+            realm.executeTransaction { transactionRealm ->
+                var count = transactionRealm.where<RevokedPass>().findAll().size
+                Log.i("Revoke", "Before delete $count")
+                val revokedPassesToDelete = transactionRealm.where<RevokedPass>().`in`("hashedUVCI", hashedUVCIListToDeleteArray).findAll()
+                Log.i("Revoke", revokedPassesToDelete.count().toString())
+                revokedPassesToDelete.deleteAllFromRealm()
+                count = transactionRealm.where<RevokedPass>().findAll().size
+                Log.i("Revoke", "After delete $count")
+            }
             return@execute true
         }
     }
