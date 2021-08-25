@@ -37,6 +37,9 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.kotlin.*
 import it.ministerodellasalute.verificaC19.data.local.*
+import org.json.JSONException
+import org.json.JSONObject
+import java.net.URL
 
 
 class VerifierRepositoryImpl @Inject constructor(
@@ -63,11 +66,24 @@ class VerifierRepositoryImpl @Inject constructor(
 
             fetchStatus.postValue(false)
 
+            val apiResponse = URL("https://storage.googleapis.com/dgc-greenpass/200K.json").readText()
+            //Log.i("hash", apiResponse)
+
+            var jsonObject: JSONObject? = null
+            try {
+                jsonObject = JSONObject(apiResponse)
+            } catch (e: JSONException) {
+                Log.e("error", e.localizedMessage)
+            }
+            Log.i("hash", jsonObject.toString())
+
             val realmName: String = "VerificaC19"
             val config = RealmConfiguration.Builder().name(realmName).build()
             val realm : Realm = Realm.getInstance(config)
 
-            Log.i("Revoke", "Revoke passes start")
+
+
+            /*Log.i("Revoke", "Revoke passes start")
             //insert lots of passes
             var passArr = mutableListOf<RevokedPass>()
             for (i in 0..100 step 1) {
@@ -101,7 +117,7 @@ class VerifierRepositoryImpl @Inject constructor(
                 revokedPassesToDelete.deleteAllFromRealm()
                 count = transactionRealm.where<RevokedPass>().findAll().size
                 Log.i("Revoke", "After delete $count")
-            }
+            }*/
             return@execute true
         }
     }
