@@ -21,6 +21,7 @@
 package it.ministerodellasalute.verificaC19.ui.main.verification
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -93,11 +94,14 @@ class VerificationFragment : Fragment(), View.OnClickListener {
         val realm : Realm = Realm.getInstance(config)
 
         var revokedPass: RevokedPass? = null
+        Log.i("Revoke", "Searching")
         if (realm != null) {
-            val revokedPasses = realm.where<RevokedPass>().findAll()
-            val foundRevokedPass : List<RevokedPass> = revokedPasses.where().equalTo("hashedUVCI", "c89216d40836959322c2b4c38241d07b81ea264b30d19634072f6813af49231c").findAll()
+            val query = realm.where(RevokedPass::class.java)
+            query.equalTo("hashedUVCI", "4d12e7d660994b78be094bb166b97f05b3646c31eeb3497798029e42e2076f90")
+            val foundRevokedPass = query.findAll()
             if (foundRevokedPass != null && foundRevokedPass.size > 0) {
                 revokedPass = foundRevokedPass[0]!!
+                Log.i("Revoke", "Found!")
             }
         }
 

@@ -37,6 +37,7 @@ import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.kotlin.*
 import it.ministerodellasalute.verificaC19.data.local.*
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.net.URL
@@ -66,58 +67,42 @@ class VerifierRepositoryImpl @Inject constructor(
 
             fetchStatus.postValue(false)
 
+            Log.i("Revoke", "Calling...")
             val apiResponse = URL("https://storage.googleapis.com/dgc-greenpass/200K.json").readText()
-            //Log.i("hash", apiResponse)
+            Log.i("Revoke", "Received response")
 
             var jsonObject: JSONObject? = null
+            var jsonArray: JSONArray? = null
+            var array = mutableListOf<RevokedPass>()
             try {
                 jsonObject = JSONObject(apiResponse)
+                jsonArray = jsonObject.getJSONArray("revokedUcvi")
+
             } catch (e: JSONException) {
                 Log.e("error", e.localizedMessage)
             }
-            Log.i("hash", jsonObject.toString())
+            Log.i("Revoke", "array created")
+
+            if (jsonArray != null) {
+                for (i in 0 until jsonArray.length()) {
+                    var revokedPass : RevokedPass = RevokedPass()
+                    revokedPass.hashedUVCI = jsonArray.getString(i)
+                    array.add(revokedPass)
+                }
+            }
+            Log.i("Revoke", "Revoked pass array created")
 
             val realmName: String = "VerificaC19"
             val config = RealmConfiguration.Builder().name(realmName).build()
             val realm : Realm = Realm.getInstance(config)
-
-
-
-            /*Log.i("Revoke", "Revoke passes start")
-            //insert lots of passes
-            var passArr = mutableListOf<RevokedPass>()
-            for (i in 0..100 step 1) {
-                passArr.clear()
-                Log.i("Revoke", "Inserting 10000 - $i")
-                for (j in 10000*i until 10000*(i+1) step 1) {
-                    var revokedPass : RevokedPass = RevokedPass()
-                    revokedPass.hashedUVCI = j.toString().sha256()
-                    passArr.addAll(listOf(revokedPass))
-                }
-                Log.i("Revoke", "Array created - $i")
-                realm.executeTransaction { transactionRealm ->
-                    transactionRealm.insert(passArr)
-                }
-                val count = realm.where<RevokedPass>().findAll().size
-                Log.i("Revoke", "Inserted $count - $i")
-            }
-            Log.i("Revoke", "Revoke passes inserted")
-            var hashedUVCIListToDelete = mutableListOf<String>()
-            Log.i("Revoke", "Inserting record to delete")
-            for (i in 0..1000000 step 100) {
-                hashedUVCIListToDelete.addAll(listOf(i.toString().sha256()))
-            }
-            var hashedUVCIListToDeleteArray = hashedUVCIListToDelete.toTypedArray()
-            Log.i("Revoke", "Array to delete created")
             realm.executeTransaction { transactionRealm ->
-                var count = transactionRealm.where<RevokedPass>().findAll().size
-                Log.i("Revoke", "Before delete $count")
-                val revokedPassesToDelete = transactionRealm.where<RevokedPass>().`in`("hashedUVCI", hashedUVCIListToDeleteArray).findAll()
-                Log.i("Revoke", revokedPassesToDelete.count().toString())
-                revokedPassesToDelete.deleteAllFromRealm()
-                count = transactionRealm.where<RevokedPass>().findAll().size
-                Log.i("Revoke", "After delete $count")
-            }*/
+                transactionRealm.insertOrUpdate(array)
+            }
+            Log.i("Revoke", "Inserted")
+            val count = realm.where<RevokedPass>().findAll().size
+            Log.i("Revoke", "Inserted $count")
+            realm.close()
+
             return@execute true
         }
     }
