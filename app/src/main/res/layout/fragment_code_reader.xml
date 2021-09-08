@@ -61,6 +61,21 @@
             app:layout_constraintStart_toEndOf="@id/back_image"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <Button
+            android:id="@+id/torch_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_slightly_rounded_blue"
+            android:text="@string/torch_on"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/titiliumfont"
+            android:layout_marginEnd="@dimen/padding_10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

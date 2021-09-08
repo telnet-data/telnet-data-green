@@ -21,6 +21,7 @@
 
 package it.ministerodellasalute.verificaC19.ui.main.codeReader
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,19 +36,21 @@ import com.google.zxing.ResultPoint
 import com.google.zxing.client.android.BeepManager
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
+import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import it.ministerodellasalute.verificaC19.R
 import it.ministerodellasalute.verificaC19.databinding.FragmentCodeReaderBinding
 import java.lang.Exception
 
 class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListener,
-    View.OnClickListener {
+    View.OnClickListener, DecoratedBarcodeView.TorchListener {
 
     private var _binding: FragmentCodeReaderBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var beepManager: BeepManager
     private var lastText: String? = null
+    private var torchOn: Boolean = false
 
     private val callback: BarcodeCallback = object : BarcodeCallback {
         override fun barcodeResult(result: BarcodeResult) {
@@ -99,6 +102,12 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
 
         binding.backImage.setOnClickListener(this)
         binding.backText.setOnClickListener(this)
+        if (!hasFlash()) {
+            binding.torchButton.visibility = View.GONE
+        } else {
+            binding.torchButton.setOnClickListener(this)
+            binding.barcodeScanner.setTorchListener(this)
+        }
     }
 
     override fun onDestroyView() {
@@ -110,6 +119,9 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
         super.onResume()
         findNavController().addOnDestinationChangedListener(this)
         lastText = ""
+        if (torchOn) {
+            binding.torchButton.setText(R.string.torch_off)
+        }
     }
 
     override fun onPause() {
@@ -142,6 +154,22 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
         when (v?.id) {
             R.id.back_image -> requireActivity().finish()
             R.id.back_text -> requireActivity().finish()
+            R.id.torch_button -> if (torchOn) binding.barcodeScanner.setTorchOff() else binding.barcodeScanner.setTorchOn()
         }
+    }
+
+    private fun hasFlash(): Boolean {
+        return requireActivity().packageManager
+            .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)
+    }
+
+    override fun onTorchOn() {
+        torchOn = true
+        binding.torchButton.setText(R.string.torch_off)
+    }
+
+    override fun onTorchOff() {
+        torchOn = false
+        binding.torchButton.setText(R.string.torch_on)
     }
 }
