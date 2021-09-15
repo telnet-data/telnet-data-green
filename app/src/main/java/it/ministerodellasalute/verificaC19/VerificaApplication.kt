@@ -26,6 +26,7 @@ import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.*
 import dagger.hilt.android.HiltAndroidApp
+import it.ministerodellasalute.verificaC19sdk.worker.LoadKeysWorker
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -46,5 +47,20 @@ class VerificaApplication : Application(), Configuration.Provider {
         super.onCreate()
     }
 
+    private fun setWorkManager(){
+        val uploadWorkRequest: WorkRequest =
+            PeriodicWorkRequestBuilder<LoadKeysWorker>(1, TimeUnit.DAYS)
+                .setConstraints(Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build())
+                .build()
+        WorkManager
+            .getInstance(this)
+            .enqueueUniquePeriodicWork(
+                "LoadKeysWorker",
+                ExistingPeriodicWorkPolicy.REPLACE,
+                uploadWorkRequest as PeriodicWorkRequest
+            )
+    }
 
 }
