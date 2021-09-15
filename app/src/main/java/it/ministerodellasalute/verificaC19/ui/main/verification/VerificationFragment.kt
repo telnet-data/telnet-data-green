@@ -41,6 +41,7 @@ import it.ministerodellasalute.verificaC19.ui.compounds.QuestionCompound
 import java.util.*
 import it.ministerodellasalute.verificaC19sdk.model.VerificationViewModel
 
+
 @ExperimentalUnsignedTypes
 @AndroidEntryPoint
 class VerificationFragment : Fragment(), View.OnClickListener {
