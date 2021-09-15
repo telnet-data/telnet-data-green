@@ -17,34 +17,20 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by Mykhailo Nester on 4/23/21 9:48 AM
+ *  Created by Mykhailo Nester on 4/23/21 9:51 AM
  */
 
-package it.ministerodellasalute.verificaC19
+package dgca.verifier.app.decoder.prefixvalidation
 
-import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.*
-import dagger.hilt.android.HiltAndroidApp
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import dgca.verifier.app.decoder.model.VerificationResult
 
+/**
+ * Drops a country-specific prefix from contents, e.g. "HC1:"
+ */
+class DefaultPrefixValidationService(private val prefix: String = "HC1:") : PrefixValidationService {
 
-@HiltAndroidApp
-class VerificaApplication : Application(), Configuration.Provider {
-
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
+    override fun decode(input: String, verificationResult: VerificationResult): String = when {
+        input.startsWith(prefix) -> input.drop(prefix.length).also { verificationResult.contextPrefix = prefix }
+        else -> input.also { verificationResult.contextPrefix = null }
     }
-
-    override fun onCreate() {
-        super.onCreate()
-    }
-
-
 }

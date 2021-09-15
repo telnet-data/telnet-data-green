@@ -17,34 +17,30 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by Mykhailo Nester on 4/23/21 9:48 AM
+ *  Created by mykhailo.nester on 5/11/21 11:12 PM
  */
 
-package it.ministerodellasalute.verificaC19
+package dgca.verifier.app.decoder
 
-import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.*
-import dagger.hilt.android.HiltAndroidApp
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import android.util.Base64
+import java.nio.charset.StandardCharsets
+import java.security.PrivateKey
+import java.security.Signature
 
+fun generateClaimSignature(
+    tanHash: String,
+    certHash: String,
+    publicKey: String,
+    privateKey: PrivateKey, sigAlg: String
+): String {
+    val sigValue = StringBuilder()
+    sigValue.append(tanHash)
+        .append(certHash)
+        .append(publicKey)
+    val signature = Signature.getInstance(sigAlg)
+    signature.initSign(privateKey)
+    signature.update(sigValue.toString().toByteArray(StandardCharsets.UTF_8))
+    val sigData = signature.sign()
 
-@HiltAndroidApp
-class VerificaApplication : Application(), Configuration.Provider {
-
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-    }
-
-
+    return Base64.encodeToString(sigData, Base64.NO_WRAP)
 }

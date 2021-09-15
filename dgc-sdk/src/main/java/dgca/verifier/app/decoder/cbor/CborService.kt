@@ -17,34 +17,32 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by Mykhailo Nester on 4/23/21 9:48 AM
+ *  Created by Mykhailo Nester on 4/23/21 9:50 AM
  */
 
-package it.ministerodellasalute.verificaC19
+package dgca.verifier.app.decoder.cbor
 
-import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.*
-import dagger.hilt.android.HiltAndroidApp
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import dgca.verifier.app.decoder.model.GreenCertificate
+import dgca.verifier.app.decoder.model.VerificationResult
+import java.time.ZonedDateTime
 
+data class GreenCertificateData(
+    val issuingCountry: String?,
+    val hcertJson: String,
+    val greenCertificate: GreenCertificate,
+    val issuedAt: ZonedDateTime,
+    val expirationTime: ZonedDateTime
+)
 
-@HiltAndroidApp
-class VerificaApplication : Application(), Configuration.Provider {
+/**
+ * Decodes input as a CBOR structure
+ */
+interface CborService {
 
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
+    fun decode(input: ByteArray, verificationResult: VerificationResult): GreenCertificate?
 
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-    }
-
-
+    fun decodeData(
+        input: ByteArray,
+        verificationResult: VerificationResult
+    ): GreenCertificateData?
 }

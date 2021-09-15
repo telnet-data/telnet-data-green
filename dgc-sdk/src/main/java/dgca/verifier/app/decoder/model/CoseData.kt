@@ -17,34 +17,33 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by Mykhailo Nester on 4/23/21 9:48 AM
+ *  Created by mykhailo.nester on 4/24/21 3:42 PM
  */
 
-package it.ministerodellasalute.verificaC19
+package dgca.verifier.app.decoder.model
 
-import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.*
-import dagger.hilt.android.HiltAndroidApp
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+data class CoseData(
+    val cbor: ByteArray,
+    val kid: ByteArray? = null
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
+        other as CoseData
 
-@HiltAndroidApp
-class VerificaApplication : Application(), Configuration.Provider {
+        if (!cbor.contentEquals(other.cbor)) return false
+        if (kid != null) {
+            if (other.kid == null) return false
+            if (!kid.contentEquals(other.kid)) return false
+        } else if (other.kid != null) return false
 
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
+        return true
     }
 
-    override fun onCreate() {
-        super.onCreate()
+    override fun hashCode(): Int {
+        var result = cbor.contentHashCode()
+        result = 31 * result + (kid?.contentHashCode() ?: 0)
+        return result
     }
-
-
 }

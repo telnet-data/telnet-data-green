@@ -17,34 +17,44 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by Mykhailo Nester on 4/23/21 9:48 AM
+ *  Created by mykhailo.nester on 4/30/21 1:29 PM
  */
 
-package it.ministerodellasalute.verificaC19
+package dgca.verifier.app.decoder.model
 
-import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.*
-import dagger.hilt.android.HiltAndroidApp
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import com.fasterxml.jackson.annotation.JsonProperty
+import java.io.Serializable
 
+data class Vaccination(
 
-@HiltAndroidApp
-class VerificaApplication : Application(), Configuration.Provider {
+    @JsonProperty("tg")
+    val disease: String,
 
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
+    @JsonProperty("vp")
+    val vaccine: String,
 
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
-    }
+    @JsonProperty("mp")
+    val medicinalProduct: String,
 
-    override fun onCreate() {
-        super.onCreate()
-    }
+    @JsonProperty("ma")
+    val manufacturer: String,
 
+    @JsonProperty("dn")
+    val doseNumber: Int,
 
-}
+    @JsonProperty("sd")
+    val totalSeriesOfDoses: Int,
+
+    @JsonProperty("dt")
+    val dateOfVaccination: String,
+
+    @JsonProperty("co")
+    val countryOfVaccination: String,
+
+    @JsonProperty("is")
+    val certificateIssuer: String,
+
+    @JsonProperty("ci")
+    val certificateIdentifier: String
+
+) : Serializable

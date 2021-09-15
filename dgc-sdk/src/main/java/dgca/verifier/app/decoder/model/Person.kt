@@ -17,34 +17,26 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by Mykhailo Nester on 4/23/21 9:48 AM
+ *  Created by mykhailo.nester on 4/30/21 1:25 PM
  */
 
-package it.ministerodellasalute.verificaC19
+package dgca.verifier.app.decoder.model
 
-import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.*
-import dagger.hilt.android.HiltAndroidApp
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import com.fasterxml.jackson.annotation.JsonProperty
+import java.io.Serializable
 
+data class Person(
 
-@HiltAndroidApp
-class VerificaApplication : Application(), Configuration.Provider {
+    @JsonProperty("fnt")
+    val standardisedFamilyName: String,
 
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
+    @JsonProperty("fn")
+    val familyName: String?,
 
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
-    }
+    @JsonProperty("gnt")
+    val standardisedGivenName: String?,
 
-    override fun onCreate() {
-        super.onCreate()
-    }
+    @JsonProperty("gn")
+    val givenName: String?
 
-
-}
+) : Serializable

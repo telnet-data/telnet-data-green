@@ -17,34 +17,20 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by Mykhailo Nester on 4/23/21 9:48 AM
+ *  Created by mykhailo.nester on 4/24/21 3:09 PM
  */
 
-package it.ministerodellasalute.verificaC19
+package dgca.verifier.app.decoder.cose
 
-import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.*
-import dagger.hilt.android.HiltAndroidApp
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import dgca.verifier.app.decoder.model.CertificateType
+import dgca.verifier.app.decoder.model.VerificationResult
+import java.security.cert.Certificate
 
+/**
+ * Verifies COSE signature
+ */
+interface CryptoService {
 
-@HiltAndroidApp
-class VerificaApplication : Application(), Configuration.Provider {
-
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-    }
-
-
+    fun validate(cose: ByteArray, certificate: Certificate, verificationResult: VerificationResult)
+    fun validate(cose: ByteArray, certificate: Certificate, verificationResult: VerificationResult, certificateType: CertificateType)
 }

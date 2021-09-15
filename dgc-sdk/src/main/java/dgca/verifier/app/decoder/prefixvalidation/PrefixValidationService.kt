@@ -17,34 +17,17 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by Mykhailo Nester on 4/23/21 9:48 AM
+ *  Created by Mykhailo Nester on 4/23/21 9:51 AM
  */
 
-package it.ministerodellasalute.verificaC19
+package dgca.verifier.app.decoder.prefixvalidation
 
-import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.*
-import dagger.hilt.android.HiltAndroidApp
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import dgca.verifier.app.decoder.model.VerificationResult
 
+/**
+ * Drops prefix from input
+ */
+interface PrefixValidationService {
 
-@HiltAndroidApp
-class VerificaApplication : Application(), Configuration.Provider {
-
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-    }
-
-
+    fun decode(input: String, verificationResult: VerificationResult): String
 }

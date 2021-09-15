@@ -17,34 +17,27 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by Mykhailo Nester on 4/23/21 9:48 AM
+ *  Created by Mykhailo Nester on 4/23/21 9:51 AM
  */
 
-package it.ministerodellasalute.verificaC19
+package dgca.verifier.app.decoder.cwt
 
-import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.*
-import dagger.hilt.android.HiltAndroidApp
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import com.upokecenter.cbor.CBORObject
 
+/**
+ * Adapted from [COSE.HeaderKeys] to use CWT specific ones (https://tools.ietf.org/html/rfc8392)
+ */
+@Suppress("ClassName")
+sealed class CwtHeaderKeys(value: Int) {
 
-@HiltAndroidApp
-class VerificaApplication : Application(), Configuration.Provider {
+    private val value: CBORObject = CBORObject.FromObject(value)
 
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
+    fun asCBOR(): CBORObject {
+        return value
     }
 
-    override fun onCreate() {
-        super.onCreate()
-    }
-
-
+    object ISSUING_COUNTRY : CwtHeaderKeys(1)
+    object EXPIRATION : CwtHeaderKeys(4)
+    object ISSUED_AT : CwtHeaderKeys(6)
+    object HCERT : CwtHeaderKeys(-260)
 }

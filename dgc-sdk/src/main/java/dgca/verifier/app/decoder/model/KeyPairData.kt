@@ -17,34 +17,14 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by Mykhailo Nester on 4/23/21 9:48 AM
+ *  Created by mykhailo.nester on 5/12/21 12:42 AM
  */
 
-package it.ministerodellasalute.verificaC19
+package dgca.verifier.app.decoder.model
 
-import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
-import androidx.work.*
-import dagger.hilt.android.HiltAndroidApp
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
+import java.security.KeyPair
 
-
-@HiltAndroidApp
-class VerificaApplication : Application(), Configuration.Provider {
-
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-    }
-
-
-}
+data class KeyPairData(
+    val algo: String,
+    val keyPair: KeyPair
+)
