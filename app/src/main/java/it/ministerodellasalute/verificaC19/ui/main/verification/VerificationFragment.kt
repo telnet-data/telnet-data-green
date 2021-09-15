@@ -34,9 +34,9 @@ import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.*
 import it.ministerodellasalute.verificaC19.databinding.FragmentVerificationBinding
-import it.ministerodellasalute.verificaC19.model.CertificateModel
-import it.ministerodellasalute.verificaC19.model.CertificateStatus
-import it.ministerodellasalute.verificaC19.model.PersonModel
+import it.ministerodellasalute.verificaC19sdk.model.CertificateModel
+import it.ministerodellasalute.verificaC19sdk.model.CertificateStatus
+import it.ministerodellasalute.verificaC19sdk.model.PersonModel
 import it.ministerodellasalute.verificaC19.ui.compounds.QuestionCompound
 import java.util.*
 

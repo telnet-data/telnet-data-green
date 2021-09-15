@@ -48,7 +48,7 @@ import it.ministerodellasalute.verificaC19.databinding.ActivityFirstBinding
 import it.ministerodellasalute.verificaC19sdk.parseTo
 import it.ministerodellasalute.verificaC19.ui.main.MainActivity
 import it.ministerodellasalute.verificaC19sdk.util.Utility
-import it.ministerodellasalute.verificaC19sdk.model
+import it.ministerodellasalute.verificaC19sdk.model.FirstViewModel
 @AndroidEntryPoint
 class FirstActivity : AppCompatActivity(), View.OnClickListener {
 
