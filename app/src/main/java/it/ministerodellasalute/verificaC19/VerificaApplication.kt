@@ -45,6 +45,7 @@ class VerificaApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        setWorkManager()
     }
 
     private fun setWorkManager(){
