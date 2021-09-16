@@ -40,7 +40,11 @@ import it.ministerodellasalute.verificaC19sdk.model.PersonModel
 import it.ministerodellasalute.verificaC19.ui.compounds.QuestionCompound
 import java.util.*
 import it.ministerodellasalute.verificaC19sdk.model.VerificationViewModel
-
+import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_BIRTHDAY_DATE
+import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_VALIDATION_DATE
+import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseFromTo
+import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseTo
+import it.ministerodellasalute.verificaC19sdk.util.YEAR_MONTH_DAY
 
 @ExperimentalUnsignedTypes
 @AndroidEntryPoint
