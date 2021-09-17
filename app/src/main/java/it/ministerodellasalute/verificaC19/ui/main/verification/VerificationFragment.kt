@@ -21,9 +21,11 @@
 package it.ministerodellasalute.verificaC19.ui.main.verification
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -38,6 +40,7 @@ import it.ministerodellasalute.verificaC19sdk.model.CertificateModel
 import it.ministerodellasalute.verificaC19sdk.model.CertificateStatus
 import it.ministerodellasalute.verificaC19sdk.model.PersonModel
 import it.ministerodellasalute.verificaC19.ui.compounds.QuestionCompound
+import it.ministerodellasalute.verificaC19sdk.VerificaMinVersionException
 import java.util.*
 import it.ministerodellasalute.verificaC19sdk.model.VerificationViewModel
 
@@ -79,7 +82,15 @@ class VerificationFragment : Fragment(), View.OnClickListener {
         viewModel.inProgress.observe(viewLifecycleOwner) {
             binding.progressBar.isVisible = it
         }
-        viewModel.init(args.qrCodeText)
+        try {
+            viewModel.init(args.qrCodeText)
+        }
+        catch (e: VerificaMinVersionException)
+        {
+            Log.d("VerificationFragment", "Min Version Exception")
+            createForceUpdateDialog()
+        }
+
     }
 
     private fun setupCertStatusView(cert: CertificateModel) {
@@ -184,4 +195,12 @@ class VerificationFragment : Fragment(), View.OnClickListener {
         _binding = null
     }
 
+    private fun createForceUpdateDialog() {
+        val builder = this.activity?.let { AlertDialog.Builder(it.applicationContext) }
+        builder!!.setTitle(getString(R.string.updateTitle))
+        builder!!.setMessage(getString(R.string.updateMessage))
+        val dialog = builder.create()
+        dialog.setCancelable(false)
+        dialog.show()
+    }
 }
