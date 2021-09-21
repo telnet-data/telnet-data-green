@@ -36,13 +36,13 @@ import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.*
 import it.ministerodellasalute.verificaC19.databinding.FragmentVerificationBinding
-import it.ministerodellasalute.verificaC19sdk.model.CertificateModel
-import it.ministerodellasalute.verificaC19sdk.model.CertificateStatus
-import it.ministerodellasalute.verificaC19sdk.model.PersonModel
 import it.ministerodellasalute.verificaC19.ui.compounds.QuestionCompound
 import it.ministerodellasalute.verificaC19sdk.VerificaMinVersionException
-import java.util.*
+import it.ministerodellasalute.verificaC19sdk.model.CertificateSimple
+import it.ministerodellasalute.verificaC19sdk.model.CertificateStatus
+import it.ministerodellasalute.verificaC19sdk.model.SimplePersonModel
 import it.ministerodellasalute.verificaC19sdk.model.VerificationViewModel
+import java.util.*
 import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_BIRTHDAY_DATE
 import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_VALIDATION_DATE
 import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseFromTo
@@ -58,7 +58,7 @@ class VerificationFragment : Fragment(), View.OnClickListener {
 
     private var _binding: FragmentVerificationBinding? = null
     private val binding get() = _binding!!
-    private lateinit var certificateModel: CertificateModel
+    private lateinit var certificateModel: CertificateSimple
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -97,15 +97,18 @@ class VerificationFragment : Fragment(), View.OnClickListener {
 
     }
 
-    private fun setupCertStatusView(cert: CertificateModel) {
-        val certStatus = viewModel.getCertificateStatus(cert)
-        setBackgroundColor(certStatus)
-        setPersonDetailsVisibility(certStatus)
-        setValidationIcon(certStatus)
-        setValidationMainText(certStatus)
-        setValidationSubTextVisibility(certStatus)
-        setValidationSubText(certStatus)
-        setLinkViews(certStatus)
+    private fun setupCertStatusView(cert: CertificateSimple) {
+        //val certStatus = viewModel.getCertificateStatus(cert)
+        val certStatus = cert.certificateStatus
+        if (certStatus !=null) {
+            setBackgroundColor(certStatus)
+            setPersonDetailsVisibility(certStatus)
+            setValidationIcon(certStatus)
+            setValidationMainText(certStatus)
+            setValidationSubTextVisibility(certStatus)
+            setValidationSubText(certStatus)
+            setLinkViews(certStatus)
+        }
     }
 
     private fun setLinkViews(certStatus: CertificateStatus) {
@@ -182,7 +185,7 @@ class VerificationFragment : Fragment(), View.OnClickListener {
         )
     }
 
-    private fun setPersonData(person: PersonModel?, dateOfBirth: String?) {
+    private fun setPersonData(person: SimplePersonModel?, dateOfBirth: String?) {
         binding.nameStandardisedText.text = person?.familyName.plus(" ").plus(person?.givenName)
         binding.birthdateText.text =
             dateOfBirth?.parseFromTo(YEAR_MONTH_DAY, FORMATTED_BIRTHDAY_DATE) ?: ""
