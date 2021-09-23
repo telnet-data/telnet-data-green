@@ -97,6 +97,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
             if (it) {
                 binding.qrButton.isEnabled = false
                 binding.dateLastSyncText.text = getString(R.string.loading)
+                binding.updateProgressBar.visibility = View.VISIBLE     // <-- ADDED.
             } else {
                 binding.qrButton.isEnabled = true
                 viewModel.getDateLastSync().let { date ->
@@ -107,6 +108,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
                         )
                     )
                 }
+                binding.updateProgressBar.visibility = View.GONE     // <-- ADDED.
             }
         }
         binding.privacyPolicyCard.setOnClickListener {

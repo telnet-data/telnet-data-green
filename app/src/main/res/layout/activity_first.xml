@@ -119,15 +119,29 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/spacing">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/date_last_sync_text"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/titiliumfont"
-                    android:paddingHorizontal="@dimen/margin_24dp"
-                    android:paddingVertical="@dimen/margin_16dp"
-                    android:textColor="@color/blue_dark"
-                    tools:text="Ultimo aggiornamento dati e regole: \nmeno di 4 ore" />
+                    android:orientation="vertical">
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/date_last_sync_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/titiliumfont"
+                        android:paddingHorizontal="@dimen/margin_24dp"
+                        android:paddingVertical="@dimen/margin_16dp"
+                        android:textColor="@color/blue_dark"
+                        tools:text="Ultimo aggiornamento dati e regole: \nmeno di 4 ore" />
+
+                    <ProgressBar
+                        android:id="@+id/update_progress_bar"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+                </LinearLayout>
+
 
             </androidx.cardview.widget.CardView>
 
