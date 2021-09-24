@@ -23,7 +23,9 @@ package it.ministerodellasalute.verificaC19.ui
 
 import android.Manifest
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.net.Uri
@@ -31,6 +33,7 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,7 +41,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.text.set
 import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.BuildConfig
@@ -55,6 +57,7 @@ import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseTo
 class FirstActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityFirstBinding
+    private lateinit var shared: SharedPreferences
 
     private val viewModel by viewModels<FirstViewModel>()
 
@@ -93,11 +96,31 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
             )
         }
 
+        shared = this.getSharedPreferences("dgca.verifier.app.pref", Context.MODE_PRIVATE)
+        Log.i("shared", shared.toString())
+        binding.updateProgressBar.max = 500 // Careful: it's a dummy value.
+
+        shared.registerOnSharedPreferenceChangeListener { _, key ->
+            Log.i("Shared Preferences", key + "has changed!")
+            if (key.equals("last_downloed_chunk")) {
+                binding.updateProgressBar.progress = viewModel.getLastDownloadedChunk().toInt()
+                Log.i(key.toString(), viewModel.getLastDownloadedChunk().toString())
+            }
+        }
+
         viewModel.fetchStatus.observe(this) {
             if (it) {
                 binding.qrButton.isEnabled = false
                 binding.dateLastSyncText.text = getString(R.string.loading)
-                binding.updateProgressBar.visibility = View.VISIBLE     // <-- ADDED.
+                binding.updateProgressBar.visibility = View.VISIBLE
+                /*
+                shared.registerOnSharedPreferenceChangeListener { _, key ->
+                    // TODO: check if key is last download chunk
+                    //binding.updateProgressBar.progress = viewModel.getResumeToken().toInt()
+                    binding.updateProgressBar.progress = viewModel.getLastDownloadedChunk().toInt()
+                    Log.i("Shared Preference", key + " has changed")
+                }*/
+
             } else {
                 binding.qrButton.isEnabled = true
                 viewModel.getDateLastSync().let { date ->
@@ -108,7 +131,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
                         )
                     )
                 }
-                binding.updateProgressBar.visibility = View.GONE     // <-- ADDED.
+                binding.updateProgressBar.visibility = View.GONE
             }
         }
         binding.privacyPolicyCard.setOnClickListener {
