@@ -99,6 +99,17 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         var lastChunk = viewModel.getLastChunk().toInt()
         binding.updateProgressBar.max = lastChunk
 
+        viewModel.getauthorizedToDownload().let {
+            if (it == 0L) //if not authorized, show button
+                binding.downloadBigFile.visibility = View.VISIBLE
+            else
+            {
+                binding.downloadBigFile.visibility = View.GONE
+            }
+
+        }
+
+
         shared = this.getSharedPreferences("dgca.verifier.app.pref", Context.MODE_PRIVATE)
         Log.i("Shared Preferences Info", shared.toString())
 
@@ -144,6 +155,9 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
             val browserIntent =
                 Intent(Intent.ACTION_VIEW, Uri.parse("https://www.dgc.gov.it/web/faq.html"))
             startActivity(browserIntent)
+        }
+        binding.downloadBigFile.setOnClickListener {
+            viewModel.setauthorizedToDownload()
         }
     }
 
