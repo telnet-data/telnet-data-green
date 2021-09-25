@@ -96,7 +96,8 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
             )
         }
 
-        binding.updateProgressBar.max = 500 // Careful: it's a dummy value.
+        var lastChunk = viewModel.getLastChunk().toInt()
+        binding.updateProgressBar.max = lastChunk
 
         shared = this.getSharedPreferences("dgca.verifier.app.pref", Context.MODE_PRIVATE)
         Log.i("Shared Preferences Info", shared.toString())
