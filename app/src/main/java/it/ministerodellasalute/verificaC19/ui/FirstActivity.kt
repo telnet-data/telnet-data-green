@@ -42,15 +42,19 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.observe
+import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.BuildConfig
 import it.ministerodellasalute.verificaC19.R
+import it.ministerodellasalute.verificaC19.VerificaApplication
 import it.ministerodellasalute.verificaC19.databinding.ActivityFirstBinding
 import it.ministerodellasalute.verificaC19.ui.main.MainActivity
+import it.ministerodellasalute.verificaC19sdk.data.VerifierRepository
 import it.ministerodellasalute.verificaC19sdk.util.Utility
 import it.ministerodellasalute.verificaC19sdk.model.FirstViewModel
 import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_DATE_LAST_SYNC
 import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseTo
+import it.ministerodellasalute.verificaC19sdk.worker.LoadKeysWorker
 
 
 @AndroidEntryPoint
@@ -96,7 +100,19 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
             )
         }
 
-        binding.updateProgressBar.max = 500 // Careful: it's a dummy value.
+        var lastChunk = viewModel.getLastChunk().toInt()
+        binding.updateProgressBar.max = lastChunk
+
+        viewModel.getauthorizedToDownload().let {
+            if (it == 0L) //if not authorized, show button
+                binding.downloadBigFile.visibility = View.VISIBLE
+            else
+            {
+                binding.downloadBigFile.visibility = View.GONE
+            }
+
+        }
+
 
         shared = this.getSharedPreferences("dgca.verifier.app.pref", Context.MODE_PRIVATE)
         Log.i("Shared Preferences Info", shared.toString())
@@ -143,6 +159,11 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
             val browserIntent =
                 Intent(Intent.ACTION_VIEW, Uri.parse("https://www.dgc.gov.it/web/faq.html"))
             startActivity(browserIntent)
+        }
+        binding.downloadBigFile.setOnClickListener {
+            viewModel.setauthorizedToDownload()
+            var verificaApplication = VerificaApplication()
+            verificaApplication.setWorkManager()
         }
     }
 
