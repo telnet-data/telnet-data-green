@@ -157,7 +157,25 @@
                         android:textStyle="bold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
+                        android:visibility="visible"
+                        />
+                    <Button
+                        android:id="@+id/resumeDownload"
+                        android:background="@drawable/background_slightly_rounded_blue"
+                        android:drawablePadding="@dimen/padding_10dp"
+                        android:drawableTint="@color/white"
+                        android:fontFamily="@font/titiliumfont"
+                        android:padding="@dimen/padding_16dp"
+                        android:paddingStart="@dimen/padding_20dp"
+                        android:paddingEnd="@dimen/padding_20dp"
+                        android:text="@string/resume_download"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
                         />
                 </LinearLayout>
 
