@@ -27,6 +27,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.BlendModeColorFilter
+import android.graphics.Color
+import android.graphics.ColorFilter
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
@@ -123,14 +126,6 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
                 binding.resumeDownload.visibility = View.GONE
             }
         }
-
-        /*viewModel.getAuthResume().let {
-            if (it == 0L)  {
-                binding.resumeDownload.visibility = View.GONE
-            } else {
-                binding.resumeDownload.visibility = View.VISIBLE
-            }
-        }*/
 
         shared = this.getSharedPreferences("dgca.verifier.app.pref", Context.MODE_PRIVATE)
         Log.i("Shared Preferences Info", shared.toString())
@@ -277,7 +272,14 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (key != null) {
             if (key == "last_downloed_chunk") {
-                binding.updateProgressBar.progress = viewModel.getLastDownloadedChunk().toInt()
+                val lastDownloadedChunk = viewModel.getLastDownloadedChunk().toInt()
+                val lastChunk = viewModel.getLastChunk().toInt()
+                val singleChunkSize = viewModel.getSizeSingleChunkInByte()
+                val totalChunksSize = (singleChunkSize * lastChunk) / 1024
+
+                binding.updateProgressBar.progress = lastDownloadedChunk
+                binding.chunkCount.text = "Pacchetto $lastDownloadedChunk su $lastChunk"
+                binding.chunkSize.text = "${(lastDownloadedChunk * singleChunkSize)/1024}Mb su ${totalChunksSize}Mb"
                 Log.i(key.toString(), viewModel.getLastDownloadedChunk().toString())
             } else if (key == "last_chunk") {
                 val lastChunk = viewModel.getLastChunk().toInt()
@@ -291,9 +293,9 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         super.onDestroy()
         shared.unregisterOnSharedPreferenceChangeListener(this)
         //TODO: Check if last chunk is equal to last downloaded chunk. If it's so, set authToResume to 1. [DONE]
-        if (viewModel.getLastChunk() != viewModel.getLastDownloadedChunk()) {
+        /*if (viewModel.getLastChunk() != viewModel.getLastDownloadedChunk()) {
             Log.i("PIPPO", "PIPPO")
             viewModel.setAuthResume()
-        }
+        }*/
     }
 }
