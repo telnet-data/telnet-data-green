@@ -100,9 +100,9 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
             )
         }
 
-        /*val lastChunk = viewModel.getLastChunk().toInt()
+        val lastChunk = viewModel.getLastChunk().toInt()
         binding.updateProgressBar.max = lastChunk
-        Log.i("lastChunk", lastChunk.toString())*/
+        Log.i("lastChunk DSP", lastChunk.toString())
 
         viewModel.getauthorizedToDownload().let {
             if (it == 0L) //if not authorized, show button
