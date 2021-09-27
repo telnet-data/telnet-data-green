@@ -100,8 +100,9 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
             )
         }
 
-        var lastChunk = viewModel.getLastChunk().toInt()
+        /*val lastChunk = viewModel.getLastChunk().toInt()
         binding.updateProgressBar.max = lastChunk
+        Log.i("lastChunk", lastChunk.toString())*/
 
         viewModel.getauthorizedToDownload().let {
             if (it == 0L) //if not authorized, show button
@@ -113,29 +114,14 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
 
         }
 
-
         shared = this.getSharedPreferences("dgca.verifier.app.pref", Context.MODE_PRIVATE)
         Log.i("Shared Preferences Info", shared.toString())
-
-        /*shared.registerOnSharedPreferenceChangeListener { _, key ->
-            Log.i("Shared Preferences", key + "has changed!")
-            if (key.equals("last_downloed_chunk")) {
-                binding.updateProgressBar.progress = viewModel.getLastDownloadedChunk().toInt()
-                Log.i(key.toString(), viewModel.getLastDownloadedChunk().toString())
-            }
-        }*/
 
         viewModel.fetchStatus.observe(this) {
             if (it) {
                 binding.qrButton.isEnabled = false
                 binding.dateLastSyncText.text = getString(R.string.loading)
                 binding.updateProgressBar.visibility = View.VISIBLE
-                /*
-                shared.registerOnSharedPreferenceChangeListener { _, key ->
-                    //binding.updateProgressBar.progress = viewModel.getResumeToken().toInt()
-                    binding.updateProgressBar.progress = viewModel.getLastDownloadedChunk().toInt()
-                    Log.i("Shared Preference", key + " has changed")
-                }*/
 
             } else {
                 binding.qrButton.isEnabled = true
@@ -269,6 +255,10 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
             if (key == "last_downloed_chunk") {
                 binding.updateProgressBar.progress = viewModel.getLastDownloadedChunk().toInt()
                 Log.i(key.toString(), viewModel.getLastDownloadedChunk().toString())
+            } else if (key == "last_chunk") {
+                val lastChunk = viewModel.getLastChunk().toInt()
+                binding.updateProgressBar.max = lastChunk
+                Log.i("lastChunk", lastChunk.toString())
             }
         }
     }
