@@ -167,6 +167,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
 
         binding.resumeDownload.setOnClickListener {
             viewModel.setAuthResume()
+            binding.resumeDownload.visibility = View.GONE
             var verificaApplication = VerificaApplication()
             verificaApplication.setWorkManager()
         }
@@ -271,7 +272,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (key != null) {
-            if (key == "last_downloed_chunk") {
+            if (key == "last_downloaded_chunk") {
                 val lastDownloadedChunk = viewModel.getLastDownloadedChunk().toInt()
                 val lastChunk = viewModel.getLastChunk().toInt()
                 val singleChunkSize = viewModel.getSizeSingleChunkInByte()
@@ -286,16 +287,15 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
                 binding.updateProgressBar.max = lastChunk
                 Log.i("lastChunk", lastChunk.toString())
             }
+            else if (key == "auth_to_resume") {
+                val authToResume = viewModel.getAuthResume().toInt()
+                Log.i("auth_to_resume", authToResume.toString())
+            }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         shared.unregisterOnSharedPreferenceChangeListener(this)
-        //TODO: Check if last chunk is equal to last downloaded chunk. If it's so, set authToResume to 1. [DONE]
-        /*if (viewModel.getLastChunk() != viewModel.getLastDownloadedChunk()) {
-            Log.i("PIPPO", "PIPPO")
-            viewModel.setAuthResume()
-        }*/
     }
 }
