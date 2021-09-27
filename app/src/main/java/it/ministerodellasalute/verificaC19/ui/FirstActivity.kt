@@ -101,9 +101,11 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         }
 
         val lastChunk = viewModel.getLastChunk().toInt()
-        binding.updateProgressBar.max = lastChunk
-        Log.i("lastChunk DSP", lastChunk.toString())
 
+        binding.updateProgressBar.max = lastChunk
+        Log.i("lastChunk", lastChunk.toString())
+
+        Log.i("viewModel.getauthorizedToDownload()", viewModel.getauthorizedToDownload().toString())
         viewModel.getauthorizedToDownload().let {
             if (it == 0L) //if not authorized, show button
                 binding.downloadBigFile.visibility = View.VISIBLE
@@ -111,8 +113,24 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
             {
                 binding.downloadBigFile.visibility = View.GONE
             }
-
         }
+        Log.i("viewModel.getAuthResume()", viewModel.getAuthResume().toString())
+        viewModel.getAuthResume().let {
+            if (it == 0.toLong()) //if not authorized, show button
+                binding.resumeDownload.visibility = View.VISIBLE
+            else
+            {
+                binding.resumeDownload.visibility = View.GONE
+            }
+        }
+
+        /*viewModel.getAuthResume().let {
+            if (it == 0L)  {
+                binding.resumeDownload.visibility = View.GONE
+            } else {
+                binding.resumeDownload.visibility = View.VISIBLE
+            }
+        }*/
 
         shared = this.getSharedPreferences("dgca.verifier.app.pref", Context.MODE_PRIVATE)
         Log.i("Shared Preferences Info", shared.toString())
@@ -148,6 +166,12 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         }
         binding.downloadBigFile.setOnClickListener {
             viewModel.setauthorizedToDownload()
+            var verificaApplication = VerificaApplication()
+            verificaApplication.setWorkManager()
+        }
+
+        binding.resumeDownload.setOnClickListener {
+            viewModel.setAuthResume()
             var verificaApplication = VerificaApplication()
             verificaApplication.setWorkManager()
         }
@@ -266,5 +290,10 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
     override fun onDestroy() {
         super.onDestroy()
         shared.unregisterOnSharedPreferenceChangeListener(this)
+        //TODO: Check if last chunk is equal to last downloaded chunk. If it's so, set authToResume to 1. [DONE]
+        if (viewModel.getLastChunk() != viewModel.getLastDownloadedChunk()) {
+            Log.i("PIPPO", "PIPPO")
+            viewModel.setAuthResume()
+        }
     }
 }
