@@ -187,7 +187,6 @@
                         android:fontFamily="@font/titiliumfont"
                         android:paddingStart="@dimen/padding_10dp"
                         android:paddingEnd="@dimen/padding_10dp"
-
                         android:text="@string/label_download"
                         android:textAlignment="center"
                         android:textColor="@color/white"

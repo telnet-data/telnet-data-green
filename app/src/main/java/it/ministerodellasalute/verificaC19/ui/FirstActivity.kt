@@ -27,9 +27,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.BlendModeColorFilter
-import android.graphics.Color
-import android.graphics.ColorFilter
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
@@ -45,20 +42,17 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.observe
-import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.BuildConfig
 import it.ministerodellasalute.verificaC19.R
 import it.ministerodellasalute.verificaC19.VerificaApplication
 import it.ministerodellasalute.verificaC19.databinding.ActivityFirstBinding
 import it.ministerodellasalute.verificaC19.ui.main.MainActivity
-import it.ministerodellasalute.verificaC19sdk.data.VerifierRepository
-import it.ministerodellasalute.verificaC19sdk.util.Utility
 import it.ministerodellasalute.verificaC19sdk.model.FirstViewModel
 import it.ministerodellasalute.verificaC19sdk.util.ConversionUtility
 import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_DATE_LAST_SYNC
 import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseTo
-import it.ministerodellasalute.verificaC19sdk.worker.LoadKeysWorker
+import it.ministerodellasalute.verificaC19sdk.util.Utility
 
 
 @AndroidEntryPoint
@@ -95,21 +89,11 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         }
         binding.versionText.text = spannableString
 
-        /*viewModel.getDateLastSync().let {
-            binding.dateLastSyncText.text = getString(
-                R.string.lastSyncDate,
-                if (it == -1L) getString(R.string.notAvailable) else it.parseTo(
-                    FORMATTED_DATE_LAST_SYNC
-                )
-            )
-            binding.dateLastSyncText.text = "Aggiornamento lista dei certificati revocati in corso..."
-        }*/
-
         binding.updateProgressBar.max = viewModel.getLastChunk().toInt()
         updateDownloadedPackagesCount()
         Log.i("viewModel.getauthorizedToDownload()", viewModel.getauthorizedToDownload().toString())
         viewModel.getauthorizedToDownload().let {
-            if (it == 0L) //if not authorized, show button
+            if (it == 0L)
                 binding.downloadBigFile.visibility = View.VISIBLE
             else
             {
@@ -119,17 +103,16 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         Log.i("viewModel.getAuthResume()", viewModel.getAuthResume().toString())
 
 
-        var isPendingDownload = viewModel.getIsPendingDownload()
+        val isPendingDownload = viewModel.getIsPendingDownload()
 
         viewModel.getAuthResume().let {
 
-            if (it == 0.toLong() || isPendingDownload) {//if not authorized, show button
+            if (it == 0.toLong() || isPendingDownload) {
                 binding.resumeDownload.visibility = View.VISIBLE
                 binding.dateLastSyncText.text = getString(R.string.incompleteDownload)
                 binding.chunkCount.visibility = View.VISIBLE
                 binding.chunkSize.visibility = View.VISIBLE
-            }
-            else
+            } else
             {
                 binding.resumeDownload.visibility = View.GONE
                 binding.dateLastSyncText.text = getString(R.string.updatingRevokedPass)
@@ -142,14 +125,14 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         viewModel.fetchStatus.observe(this) {
             if (it) {
                 binding.qrButton.isEnabled = false
-                //binding.dateLastSyncText.text = getString(R.string.loading)
-                //binding.dateLastSyncText.text = "Aggiornamento lista dei certificati revocati in corso..."
+                binding.qrButton.background.alpha = 128
                 binding.updateProgressBar.visibility = View.VISIBLE
                 binding.chunkCount.visibility = View.VISIBLE
                 binding.chunkSize.visibility = View.VISIBLE
 
             } else {
                 binding.qrButton.isEnabled = true
+                binding.qrButton.background.alpha = 255
                 viewModel.getDateLastSync().let { date ->
                     binding.dateLastSyncText.text = getString(
                         R.string.lastSyncDate,
@@ -312,7 +295,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         val lastDownloadedChunk = viewModel.getLastDownloadedChunk().toInt()
         val lastChunk = viewModel.getLastChunk().toInt()
         val singleChunkSize = viewModel.getSizeSingleChunkInByte()
-        val totalChunksSize = ConversionUtility.byteToMegaByte(lastDownloadedChunk * singleChunkSize)
+        val totalChunksSize = ConversionUtility.byteToMegaByte(lastChunk * singleChunkSize)
 
         binding.updateProgressBar.progress = lastDownloadedChunk
         binding.chunkCount.text = "Pacchetto $lastDownloadedChunk su $lastChunk"
