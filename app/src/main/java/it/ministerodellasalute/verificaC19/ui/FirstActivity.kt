@@ -42,19 +42,17 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.observe
-import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.BuildConfig
 import it.ministerodellasalute.verificaC19.R
 import it.ministerodellasalute.verificaC19.VerificaApplication
 import it.ministerodellasalute.verificaC19.databinding.ActivityFirstBinding
 import it.ministerodellasalute.verificaC19.ui.main.MainActivity
-import it.ministerodellasalute.verificaC19sdk.data.VerifierRepository
-import it.ministerodellasalute.verificaC19sdk.util.Utility
 import it.ministerodellasalute.verificaC19sdk.model.FirstViewModel
+import it.ministerodellasalute.verificaC19sdk.util.ConversionUtility
 import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_DATE_LAST_SYNC
 import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseTo
-import it.ministerodellasalute.verificaC19sdk.worker.LoadKeysWorker
+import it.ministerodellasalute.verificaC19sdk.util.Utility
 
 
 @AndroidEntryPoint
@@ -91,54 +89,50 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         }
         binding.versionText.text = spannableString
 
-        viewModel.getDateLastSync().let {
-            binding.dateLastSyncText.text = getString(
-                R.string.lastSyncDate,
-                if (it == -1L) getString(R.string.notAvailable) else it.parseTo(
-                    FORMATTED_DATE_LAST_SYNC
-                )
-            )
-        }
-
-        var lastChunk = viewModel.getLastChunk().toInt()
-        binding.updateProgressBar.max = lastChunk
-
+        binding.updateProgressBar.max = viewModel.getLastChunk().toInt()
+        updateDownloadedPackagesCount()
+        Log.i("viewModel.getauthorizedToDownload()", viewModel.getauthorizedToDownload().toString())
         viewModel.getauthorizedToDownload().let {
-            if (it == 0L) //if not authorized, show button
+            if (it == 0L)
                 binding.downloadBigFile.visibility = View.VISIBLE
             else
             {
                 binding.downloadBigFile.visibility = View.GONE
             }
-
         }
+        Log.i("viewModel.getAuthResume()", viewModel.getAuthResume().toString())
 
+
+        val isPendingDownload = viewModel.getIsPendingDownload()
+
+        viewModel.getAuthResume().let {
+
+            if (it == 0.toLong() || isPendingDownload) {
+                binding.resumeDownload.visibility = View.VISIBLE
+                binding.dateLastSyncText.text = getString(R.string.incompleteDownload)
+                binding.chunkCount.visibility = View.VISIBLE
+                binding.chunkSize.visibility = View.VISIBLE
+            } else
+            {
+                binding.resumeDownload.visibility = View.GONE
+                binding.dateLastSyncText.text = getString(R.string.updatingRevokedPass)
+            }
+        }
 
         shared = this.getSharedPreferences("dgca.verifier.app.pref", Context.MODE_PRIVATE)
         Log.i("Shared Preferences Info", shared.toString())
 
-        /*shared.registerOnSharedPreferenceChangeListener { _, key ->
-            Log.i("Shared Preferences", key + "has changed!")
-            if (key.equals("last_downloed_chunk")) {
-                binding.updateProgressBar.progress = viewModel.getLastDownloadedChunk().toInt()
-                Log.i(key.toString(), viewModel.getLastDownloadedChunk().toString())
-            }
-        }*/
-
         viewModel.fetchStatus.observe(this) {
             if (it) {
                 binding.qrButton.isEnabled = false
-                binding.dateLastSyncText.text = getString(R.string.loading)
+                binding.qrButton.background.alpha = 128
                 binding.updateProgressBar.visibility = View.VISIBLE
-                /*
-                shared.registerOnSharedPreferenceChangeListener { _, key ->
-                    //binding.updateProgressBar.progress = viewModel.getResumeToken().toInt()
-                    binding.updateProgressBar.progress = viewModel.getLastDownloadedChunk().toInt()
-                    Log.i("Shared Preference", key + " has changed")
-                }*/
+                binding.chunkCount.visibility = View.VISIBLE
+                binding.chunkSize.visibility = View.VISIBLE
 
             } else {
                 binding.qrButton.isEnabled = true
+                binding.qrButton.background.alpha = 255
                 viewModel.getDateLastSync().let { date ->
                     binding.dateLastSyncText.text = getString(
                         R.string.lastSyncDate,
@@ -148,6 +142,8 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
                     )
                 }
                 binding.updateProgressBar.visibility = View.GONE
+                binding.chunkCount.visibility = View.GONE
+                binding.chunkSize.visibility = View.GONE
             }
         }
         binding.privacyPolicyCard.setOnClickListener {
@@ -162,7 +158,15 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         }
         binding.downloadBigFile.setOnClickListener {
             viewModel.setauthorizedToDownload()
-            var verificaApplication = VerificaApplication()
+            val verificaApplication = VerificaApplication()
+            verificaApplication.setWorkManager()
+        }
+
+        binding.resumeDownload.setOnClickListener {
+            viewModel.setAuthResume()
+            binding.resumeDownload.visibility = View.GONE
+            binding.dateLastSyncText.text = getString(R.string.updatingRevokedPass)
+            val verificaApplication = VerificaApplication()
             verificaApplication.setWorkManager()
         }
     }
@@ -266,9 +270,23 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (key != null) {
-            if (key == "last_downloed_chunk") {
-                binding.updateProgressBar.progress = viewModel.getLastDownloadedChunk().toInt()
+            if (key == "last_downloaded_chunk") {
+                updateDownloadedPackagesCount()
                 Log.i(key.toString(), viewModel.getLastDownloadedChunk().toString())
+            }
+            if (key == "last_chunk") {
+                val lastChunk = viewModel.getLastChunk().toInt()
+                binding.updateProgressBar.max = lastChunk
+                Log.i("lastChunk", lastChunk.toString())
+            }
+            if (key == "auth_to_resume") {
+                val authToResume = viewModel.getAuthResume().toInt()
+                Log.i("auth_to_resume", authToResume.toString())
+
+                if (viewModel.getAuthResume() == 0L)
+                {
+                    binding.resumeDownload.visibility = View.VISIBLE
+                }
             }
         }
     }
@@ -276,5 +294,16 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
     override fun onDestroy() {
         super.onDestroy()
         shared.unregisterOnSharedPreferenceChangeListener(this)
+    }
+
+    private fun updateDownloadedPackagesCount() {
+        val lastDownloadedChunk = viewModel.getLastDownloadedChunk().toInt()
+        val lastChunk = viewModel.getLastChunk().toInt()
+        val singleChunkSize = viewModel.getSizeSingleChunkInByte()
+        val totalChunksSize = ConversionUtility.byteToMegaByte(lastChunk * singleChunkSize)
+
+        binding.updateProgressBar.progress = lastDownloadedChunk
+        binding.chunkCount.text = "Pacchetto $lastDownloadedChunk su $lastChunk"
+        binding.chunkSize.text = "${ConversionUtility.byteToMegaByte(lastDownloadedChunk * singleChunkSize)}Mb su ${totalChunksSize}Mb"
     }
 }
