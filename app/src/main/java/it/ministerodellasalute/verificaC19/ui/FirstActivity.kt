@@ -94,20 +94,27 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         }
         binding.versionText.text = spannableString
 
-        viewModel.getDateLastSync().let {
+        /*viewModel.getDateLastSync().let {
             binding.dateLastSyncText.text = getString(
                 R.string.lastSyncDate,
                 if (it == -1L) getString(R.string.notAvailable) else it.parseTo(
                     FORMATTED_DATE_LAST_SYNC
                 )
             )
-        }
+            binding.dateLastSyncText.text = "Aggiornamento lista dei certificati revocati in corso..."
+        }*/
 
         val lastChunk = viewModel.getLastChunk().toInt()
+        val lastDownloadedChunk = viewModel.getLastDownloadedChunk().toInt()
+        val singleChunkSize = viewModel.getSizeSingleChunkInByte()
+        val totalChunksSize = (singleChunkSize * lastChunk) / 1000000
 
         binding.updateProgressBar.max = lastChunk
-        Log.i("lastChunk", lastChunk.toString())
+        binding.updateProgressBar.progress = lastDownloadedChunk
+        binding.chunkCount.text = "Pacchetto $lastDownloadedChunk su $lastChunk"
+        binding.chunkSize.text = "${(lastDownloadedChunk * singleChunkSize)/1000000}Mb su ${totalChunksSize}Mb"
 
+        Log.i("lastChunk", lastChunk.toString())
         Log.i("viewModel.getauthorizedToDownload()", viewModel.getauthorizedToDownload().toString())
         viewModel.getauthorizedToDownload().let {
             if (it == 0L) //if not authorized, show button
@@ -119,11 +126,16 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         }
         Log.i("viewModel.getAuthResume()", viewModel.getAuthResume().toString())
         viewModel.getAuthResume().let {
-            if (it == 0.toLong()) //if not authorized, show button
+            if (it == 0.toLong()) { //if not authorized, show button
                 binding.resumeDownload.visibility = View.VISIBLE
+                binding.dateLastSyncText.text = "L'aggiornamento della lista dei certificati non è terminato. Assicurati di essere connesso a internet e clicca per continuare."
+                binding.chunkCount.visibility = View.VISIBLE
+                binding.chunkSize.visibility = View.VISIBLE
+            }
             else
             {
                 binding.resumeDownload.visibility = View.GONE
+                binding.dateLastSyncText.text = "Aggiornamento lista dei certificati revocati in corso..."
             }
         }
 
@@ -133,8 +145,12 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         viewModel.fetchStatus.observe(this) {
             if (it) {
                 binding.qrButton.isEnabled = false
-                binding.dateLastSyncText.text = getString(R.string.loading)
+                //binding.dateLastSyncText.text = getString(R.string.loading)
+                //binding.dateLastSyncText.text = "Aggiornamento lista dei certificati revocati in corso..."
+                // TODO: Here could be interesting to hide the following three views if update is complete.
                 binding.updateProgressBar.visibility = View.VISIBLE
+                binding.chunkCount.visibility = View.VISIBLE
+                binding.chunkSize.visibility = View.VISIBLE
 
             } else {
                 binding.qrButton.isEnabled = true
@@ -147,6 +163,8 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
                     )
                 }
                 binding.updateProgressBar.visibility = View.GONE
+                binding.chunkCount.visibility = View.GONE
+                binding.chunkSize.visibility = View.GONE
             }
         }
         binding.privacyPolicyCard.setOnClickListener {
@@ -161,14 +179,15 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
         }
         binding.downloadBigFile.setOnClickListener {
             viewModel.setauthorizedToDownload()
-            var verificaApplication = VerificaApplication()
+            val verificaApplication = VerificaApplication()
             verificaApplication.setWorkManager()
         }
 
         binding.resumeDownload.setOnClickListener {
             viewModel.setAuthResume()
             binding.resumeDownload.visibility = View.GONE
-            var verificaApplication = VerificaApplication()
+            binding.dateLastSyncText.text = "Aggiornamento lista dei certificati revocati in corso..."
+            val verificaApplication = VerificaApplication()
             verificaApplication.setWorkManager()
         }
     }
@@ -276,11 +295,11 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
                 val lastDownloadedChunk = viewModel.getLastDownloadedChunk().toInt()
                 val lastChunk = viewModel.getLastChunk().toInt()
                 val singleChunkSize = viewModel.getSizeSingleChunkInByte()
-                val totalChunksSize = (singleChunkSize * lastChunk) / 1024
+                val totalChunksSize = (singleChunkSize * lastChunk) / 1000000
 
                 binding.updateProgressBar.progress = lastDownloadedChunk
                 binding.chunkCount.text = "Pacchetto $lastDownloadedChunk su $lastChunk"
-                binding.chunkSize.text = "${(lastDownloadedChunk * singleChunkSize)/1024}Mb su ${totalChunksSize}Mb"
+                binding.chunkSize.text = "${(lastDownloadedChunk * singleChunkSize)/1000000}Mb su ${totalChunksSize}Mb"
                 Log.i(key.toString(), viewModel.getLastDownloadedChunk().toString())
             } else if (key == "last_chunk") {
                 val lastChunk = viewModel.getLastChunk().toInt()
