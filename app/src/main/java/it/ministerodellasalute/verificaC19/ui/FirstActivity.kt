@@ -117,8 +117,13 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
             }
         }
         Log.i("viewModel.getAuthResume()", viewModel.getAuthResume().toString())
+
+
+        var isPendingDownload = viewModel.getIsPendingDownload()
+
         viewModel.getAuthResume().let {
-            if (it == 0.toLong()) { //if not authorized, show button
+
+            if (it == 0.toLong() || isPendingDownload) {//if not authorized, show button
                 binding.resumeDownload.visibility = View.VISIBLE
                 binding.dateLastSyncText.text = getString(R.string.incompleteDownload)
                 binding.chunkCount.visibility = View.VISIBLE
@@ -285,12 +290,13 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
             if (key == "last_downloaded_chunk") {
                 updateDownloadedPackagesCount()
                 Log.i(key.toString(), viewModel.getLastDownloadedChunk().toString())
-            } else if (key == "last_chunk") {
+            }
+            if (key == "last_chunk") {
                 val lastChunk = viewModel.getLastChunk().toInt()
                 binding.updateProgressBar.max = lastChunk
                 Log.i("lastChunk", lastChunk.toString())
             }
-            else if (key == "auth_to_resume") {
+            if (key == "auth_to_resume") {
                 val authToResume = viewModel.getAuthResume().toInt()
                 Log.i("auth_to_resume", authToResume.toString())
             }
