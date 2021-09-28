@@ -82,5 +82,7 @@
     <string name="label_validation_timestamp">Ora e data di validazione: %1$s</string>
     <string name="label_download">Scarica Ora</string>
     <string name="resume_download">Riprendi</string>
+    <string name="updatingRevokedPass">Aggiornamento lista dei certificati revocati in corso...</string>
+    <string name="incompleteDownload">L\'aggiornamento della lista dei certificati non è terminato. Assicurati di essere connesso a internet e clicca per continuare.</string>
 
 </resources>
