@@ -282,6 +282,11 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener, SharedPreferenc
             if (key == "auth_to_resume") {
                 val authToResume = viewModel.getAuthResume().toInt()
                 Log.i("auth_to_resume", authToResume.toString())
+
+                if (viewModel.getAuthResume() == 0L)
+                {
+                    binding.resumeDownload.visibility = View.VISIBLE
+                }
             }
         }
     }
