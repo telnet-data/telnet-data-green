@@ -154,7 +154,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
     override fun onResume() {
         super.onResume()
         viewModel.getAppMinVersion().let {
-            if (Utility.versionCompare(it, BuildConfig.VERSION_NAME) > 0) {
+            if (Utility.versionCompare(it, BuildConfig.VERSION_NAME) > 0 || viewModel.isSDKVersionObsoleted()) {
                 createForceUpdateDialog()
             }
         }
