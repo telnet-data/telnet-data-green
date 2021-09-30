@@ -42,7 +42,6 @@ import it.ministerodellasalute.verificaC19sdk.model.CertificateSimple
 import it.ministerodellasalute.verificaC19sdk.model.CertificateStatus
 import it.ministerodellasalute.verificaC19sdk.model.SimplePersonModel
 import it.ministerodellasalute.verificaC19sdk.model.VerificationViewModel
-import java.util.*
 import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_BIRTHDAY_DATE
 import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_VALIDATION_DATE
 import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseFromTo
@@ -71,16 +70,12 @@ class VerificationFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.closeButton.setOnClickListener(this)
-        binding.validationDate.text = getString(
-            R.string.label_validation_timestamp, Date().time.parseTo(
-                FORMATTED_VALIDATION_DATE
-            )
-        )
         viewModel.certificate.observe(viewLifecycleOwner) { certificate ->
             certificate?.let {
                 certificateModel = it
                 setPersonData(it.person, it.dateOfBirth)
                 setupCertStatusView(it)
+                setupTimeStamp(it)
             }
         }
         viewModel.inProgress.observe(viewLifecycleOwner) {
@@ -109,6 +104,15 @@ class VerificationFragment : Fragment(), View.OnClickListener {
             setValidationSubText(certStatus)
             setLinkViews(certStatus)
         }
+    }
+
+    private fun setupTimeStamp(cert: CertificateSimple) {
+        binding.validationDate.text = getString(
+            R.string.label_validation_timestamp, cert.timeStamp?.parseTo(
+                FORMATTED_VALIDATION_DATE
+            )
+        )
+        binding.validationDate.visibility =View.VISIBLE
     }
 
     private fun setLinkViews(certStatus: CertificateStatus) {
