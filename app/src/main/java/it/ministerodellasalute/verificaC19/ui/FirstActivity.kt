@@ -162,6 +162,8 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun openQrCodeReader() {
         val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("SCAN_MODE", "QR_CODE_MODE")
+        intent.putExtra("SCAN_CAMERA_ID", 1)
         startActivity(intent)
     }
 
