@@ -181,6 +181,45 @@
                     android:textColor="@color/blue_dark"
                     android:textStyle="bold" />
 
+            </androidx.cardview.widget.CardView>
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/totem_card"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/margin_16dp"
+                android:layout_marginTop="@dimen/margin_16dp"
+                android:background="@color/white"
+                app:cardCornerRadius="4dp"
+                app:cardElevation="@dimen/size_8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/privacy_policy_card">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/totem_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/titiliumfont"
+                    android:paddingHorizontal="@dimen/margin_24dp"
+                    android:paddingVertical="@dimen/margin_16dp"
+                    android:text="Modalità totem"
+                    android:textColor="@color/blue_dark"
+                    android:textStyle="bold" />
+
+                <Switch
+                    android:id="@+id/switch1"
+                    android:layout_width="153dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="14dp"
+                    android:fontFamily="@font/titiliumfont"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/text_size_14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toTopOf="parent"
+                    app:layout_constraintTop_toBottomOf="parent" />
 
             </androidx.cardview.widget.CardView>
 
@@ -226,20 +265,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
-
-            <Switch
-                android:id="@+id/switch1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/titiliumfont"
-                android:textColor="@color/blue"
-                android:textSize="@dimen/text_size_14sp"
-                android:textStyle="bold"
-                android:text="Modalità totem"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/privacy_policy_card" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
