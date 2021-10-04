@@ -20,6 +20,9 @@
 
 package it.ministerodellasalute.verificaC19.ui.main.verification
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -36,7 +39,10 @@ import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.*
 import it.ministerodellasalute.verificaC19.databinding.FragmentVerificationBinding
+import it.ministerodellasalute.verificaC19.ui.FirstActivity
 import it.ministerodellasalute.verificaC19.ui.compounds.QuestionCompound
+import it.ministerodellasalute.verificaC19.ui.main.MainActivity
+import it.ministerodellasalute.verificaC19sdk.VerificaMinSDKVersionException
 import it.ministerodellasalute.verificaC19sdk.VerificaMinVersionException
 import it.ministerodellasalute.verificaC19sdk.model.CertificateSimple
 import it.ministerodellasalute.verificaC19sdk.model.CertificateStatus
@@ -84,9 +90,14 @@ class VerificationFragment : Fragment(), View.OnClickListener {
         try {
             viewModel.init(args.qrCodeText, true)
         }
+        catch (e: VerificaMinSDKVersionException)
+        {
+            Log.d("VerificationFragment", "Min SDK Version Exception")
+            createForceUpdateDialog()
+        }
         catch (e: VerificaMinVersionException)
         {
-            Log.d("VerificationFragment", "Min Version Exception")
+            Log.d("VerificationFragment", "Min App Version Exception")
             createForceUpdateDialog()
         }
 
@@ -207,11 +218,15 @@ class VerificationFragment : Fragment(), View.OnClickListener {
     }
 
     private fun createForceUpdateDialog() {
-        val builder = this.activity?.let { AlertDialog.Builder(it.applicationContext) }
+        val builder = this.activity?.let { AlertDialog.Builder(requireContext()) }
         builder!!.setTitle(getString(R.string.updateTitle))
         builder!!.setMessage(getString(R.string.updateMessage))
+        builder.setPositiveButton(getString(R.string.ok)) { dialog, which ->
+            findNavController().popBackStack()
+        }
         val dialog = builder.create()
-        dialog.setCancelable(false)
+        dialog.setCancelable(true)
         dialog.show()
     }
+
 }
