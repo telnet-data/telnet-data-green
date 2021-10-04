@@ -24,6 +24,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -82,6 +83,12 @@ class VerificationFragment : Fragment(), View.OnClickListener {
                 setPersonData(it.person, it.dateOfBirth)
                 setupCertStatusView(it)
                 setupTimeStamp(it)
+
+                if (certificate.certificateStatus == CertificateStatus.VALID) {
+                    Handler().postDelayed({
+                        activity?.onBackPressed()
+                    }, 5000)
+                }
             }
         }
         viewModel.inProgress.observe(viewLifecycleOwner) {
