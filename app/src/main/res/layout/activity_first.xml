@@ -209,7 +209,7 @@
                     android:textStyle="bold" />
 
                 <Switch
-                    android:id="@+id/switch1"
+                    android:id="@+id/totem_switch"
                     android:layout_width="153dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
