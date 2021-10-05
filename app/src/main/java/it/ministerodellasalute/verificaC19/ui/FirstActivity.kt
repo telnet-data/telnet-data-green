@@ -43,6 +43,7 @@ import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.BuildConfig
 import it.ministerodellasalute.verificaC19.R
+import it.ministerodellasalute.verificaC19.VerificaApplication
 import it.ministerodellasalute.verificaC19.databinding.ActivityFirstBinding
 import it.ministerodellasalute.verificaC19.ui.main.MainActivity
 import it.ministerodellasalute.verificaC19sdk.util.Utility
@@ -163,6 +164,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
     private fun openQrCodeReader() {
         val intent = Intent(this, MainActivity::class.java)
         if (binding.totemSwitch.isChecked) {
+            VerificaApplication.isTotemModeActive = true
             intent.putExtra("SCAN_MODE", "QR_CODE_MODE")
             intent.putExtra("SCAN_CAMERA_ID", 1)
         }
