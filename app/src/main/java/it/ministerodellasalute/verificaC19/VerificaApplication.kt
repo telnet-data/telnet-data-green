@@ -66,6 +66,7 @@ class VerificaApplication : Application(), Configuration.Provider {
 
     companion object {
         var isTotemModeActive = false
+        var isFrontCameraSelected = false
     }
 
 }

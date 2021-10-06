@@ -165,6 +165,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
     private fun openQrCodeReader() {
         val intent = Intent(this, MainActivity::class.java)
         VerificaApplication.isTotemModeActive = binding.totemSwitch.isChecked
+        VerificaApplication.isFrontCameraSelected = binding.cameraSwitch.isChecked
         if (binding.cameraSwitch.isChecked) {
             if (this.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
                 intent.putExtra("SCAN_MODE", "QR_CODE_MODE")

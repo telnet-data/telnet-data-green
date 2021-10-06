@@ -38,6 +38,7 @@ import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.journeyapps.barcodescanner.camera.CameraSettings
 import it.ministerodellasalute.verificaC19.R
+import it.ministerodellasalute.verificaC19.VerificaApplication
 import it.ministerodellasalute.verificaC19.databinding.FragmentCodeReaderBinding
 import java.lang.Exception
 
@@ -92,6 +93,10 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
         super.onViewCreated(view, savedInstanceState)
 
         val formats: Collection<BarcodeFormat> = listOf(BarcodeFormat.AZTEC, BarcodeFormat.QR_CODE)
+        
+        if (VerificaApplication.isFrontCameraSelected) {
+            binding.barcodeScanner.barcodeView.cameraSettings.focusMode = CameraSettings.FocusMode.AUTO
+        }
         binding.barcodeScanner.barcodeView.decoderFactory = DefaultDecoderFactory(formats)
         binding.barcodeScanner.initializeFromIntent(requireActivity().intent)
         binding.barcodeScanner.decodeContinuous(callback)
