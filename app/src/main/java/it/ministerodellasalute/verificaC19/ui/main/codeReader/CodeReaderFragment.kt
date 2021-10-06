@@ -92,10 +92,10 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val formats: Collection<BarcodeFormat> = listOf(BarcodeFormat.AZTEC, BarcodeFormat.QR_CODE)
+        val formats: Collection<BarcodeFormat> = listOf(BarcodeFormat.QR_CODE)
         
         if (VerificaApplication.isFrontCameraSelected) {
-            binding.barcodeScanner.barcodeView.cameraSettings.focusMode = CameraSettings.FocusMode.AUTO
+            binding.barcodeScanner.barcodeView.cameraSettings.focusMode = CameraSettings.FocusMode.INFINITY
         }
         binding.barcodeScanner.barcodeView.decoderFactory = DefaultDecoderFactory(formats)
         binding.barcodeScanner.initializeFromIntent(requireActivity().intent)
