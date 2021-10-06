@@ -31,6 +31,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.findNavController
 import com.google.zxing.BarcodeFormat
+import com.google.zxing.DecodeHintType
 import com.google.zxing.ResultPoint
 import com.google.zxing.client.android.BeepManager
 import com.journeyapps.barcodescanner.BarcodeCallback
@@ -38,6 +39,7 @@ import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import it.ministerodellasalute.verificaC19.R
 import it.ministerodellasalute.verificaC19.databinding.FragmentCodeReaderBinding
+import java.lang.Boolean
 import java.lang.Exception
 
 class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListener,
@@ -89,10 +91,12 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val formats: Collection<BarcodeFormat> = listOf(BarcodeFormat.AZTEC, BarcodeFormat.QR_CODE)
-        binding.barcodeScanner.barcodeView.decoderFactory = DefaultDecoderFactory(formats)
+        val hintsMap: MutableMap<DecodeHintType, Any> = HashMap()
+        val formats: Collection<BarcodeFormat> = listOf(BarcodeFormat.QR_CODE, BarcodeFormat.AZTEC)
+        hintsMap[DecodeHintType.TRY_HARDER] = Boolean.FALSE
+        binding.barcodeScanner.barcodeView.decoderFactory = DefaultDecoderFactory(formats, hintsMap, null, 0)
         binding.barcodeScanner.initializeFromIntent(requireActivity().intent)
+        binding.barcodeScanner.cameraSettings.isAutoFocusEnabled = true;
         binding.barcodeScanner.decodeContinuous(callback)
         binding.barcodeScanner.statusView.text = ""
         beepManager = BeepManager(requireActivity())
