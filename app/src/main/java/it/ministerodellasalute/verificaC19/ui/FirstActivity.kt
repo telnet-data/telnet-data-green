@@ -31,6 +31,7 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
@@ -163,10 +164,13 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun openQrCodeReader() {
         val intent = Intent(this, MainActivity::class.java)
-        if (binding.totemSwitch.isChecked) {
-            VerificaApplication.isTotemModeActive = true
-            intent.putExtra("SCAN_MODE", "QR_CODE_MODE")
-            intent.putExtra("SCAN_CAMERA_ID", 1)
+        VerificaApplication.isTotemModeActive = binding.totemSwitch.isChecked
+        if (binding.cameraSwitch.isChecked) {
+            if (this.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
+                intent.putExtra("SCAN_MODE", "QR_CODE_MODE")
+                intent.putExtra("SCAN_CAMERA_ID", 1)
+                Log.i("MyTag", "Device has front camera.")
+            }
         }
         startActivity(intent)
     }
