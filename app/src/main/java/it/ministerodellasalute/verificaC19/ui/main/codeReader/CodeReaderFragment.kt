@@ -40,7 +40,6 @@ import com.journeyapps.barcodescanner.camera.CameraSettings
 import it.ministerodellasalute.verificaC19.R
 import it.ministerodellasalute.verificaC19.VerificaApplication
 import it.ministerodellasalute.verificaC19.databinding.FragmentCodeReaderBinding
-import java.lang.Exception
 
 class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListener,
     View.OnClickListener {
@@ -93,10 +92,11 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
         super.onViewCreated(view, savedInstanceState)
 
         val formats: Collection<BarcodeFormat> = listOf(BarcodeFormat.QR_CODE)
-        
+
         if (VerificaApplication.isFrontCameraSelected) {
             binding.barcodeScanner.barcodeView.cameraSettings.focusMode = CameraSettings.FocusMode.INFINITY
         }
+
         binding.barcodeScanner.barcodeView.decoderFactory = DefaultDecoderFactory(formats)
         binding.barcodeScanner.initializeFromIntent(requireActivity().intent)
         binding.barcodeScanner.decodeContinuous(callback)
@@ -105,6 +105,7 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
 
         binding.backImage.setOnClickListener(this)
         binding.backText.setOnClickListener(this)
+        binding.flipCamera.setOnClickListener(this)
     }
 
     override fun onDestroyView() {
@@ -148,6 +149,12 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
         when (v?.id) {
             R.id.back_image -> requireActivity().finish()
             R.id.back_text -> requireActivity().finish()
+            R.id.flip_camera ->{
+                binding.barcodeScanner.pause()
+                binding.barcodeScanner.cameraSettings.requestedCameraId *= -1
+                binding.barcodeScanner.resume()
+                VerificaApplication.isFrontCameraSelected = binding.barcodeScanner.cameraSettings.requestedCameraId == 1
+            }
         }
     }
 }
