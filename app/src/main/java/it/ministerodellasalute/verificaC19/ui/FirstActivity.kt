@@ -78,6 +78,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(binding.root)
 
         binding.qrButton.setOnClickListener(this)
+        binding.settings.setOnClickListener(this)
 
         val string = getString(R.string.version, BuildConfig.VERSION_NAME)
         val spannableString = SpannableString(string).also {
@@ -164,15 +165,19 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun openQrCodeReader() {
         val intent = Intent(this, MainActivity::class.java)
-        VerificaApplication.isTotemModeActive = binding.totemSwitch.isChecked
-        VerificaApplication.isFrontCameraSelected = binding.cameraSwitch.isChecked
-        if (binding.cameraSwitch.isChecked) {
+
+        if (VerificaApplication.isFrontCameraSelected) {
             if (this.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
                 intent.putExtra("SCAN_MODE", "QR_CODE_MODE")
                 intent.putExtra("SCAN_CAMERA_ID", 1)
                 Log.i("MyTag", "Device has front camera.")
             }
         }
+        startActivity(intent)
+    }
+
+    private fun openSettings() {
+        val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
     }
 
@@ -185,6 +190,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
         }
         when (v?.id) {
             R.id.qrButton -> checkCameraPermission()
+            R.id.settings -> openSettings()
         }
     }
 
