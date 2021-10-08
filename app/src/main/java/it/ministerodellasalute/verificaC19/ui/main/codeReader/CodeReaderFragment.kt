@@ -27,6 +27,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.findNavController
@@ -37,10 +38,12 @@ import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.journeyapps.barcodescanner.camera.CameraSettings
+import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.R
-import it.ministerodellasalute.verificaC19.VerificaApplication
 import it.ministerodellasalute.verificaC19.databinding.FragmentCodeReaderBinding
+import it.ministerodellasalute.verificaC19sdk.model.VerificationViewModel
 
+@AndroidEntryPoint
 class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListener,
     View.OnClickListener {
 
@@ -49,6 +52,8 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
 
     private lateinit var beepManager: BeepManager
     private var lastText: String? = null
+
+    private val viewModel by viewModels<VerificationViewModel>()
 
     private val callback: BarcodeCallback = object : BarcodeCallback {
         override fun barcodeResult(result: BarcodeResult) {
@@ -93,14 +98,14 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
 
         val formats: Collection<BarcodeFormat> = listOf(BarcodeFormat.QR_CODE)
 
-        if (VerificaApplication.isFrontCameraSelected) {
+        if (viewModel.getFrontCameraStatus()) {
             binding.barcodeScanner.barcodeView.cameraSettings.focusMode = CameraSettings.FocusMode.INFINITY
         }
 
         binding.barcodeScanner.barcodeView.decoderFactory = DefaultDecoderFactory(formats)
         binding.barcodeScanner.initializeFromIntent(requireActivity().intent)
 
-        if (VerificaApplication.isFrontCameraSelected) {
+        if (viewModel.getFrontCameraStatus()) {
             binding.barcodeScanner.cameraSettings.requestedCameraId = 1
         } else {
             binding.barcodeScanner.cameraSettings.requestedCameraId = -1
@@ -162,9 +167,9 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
                 binding.barcodeScanner.resume()
 
                 if (binding.barcodeScanner.cameraSettings.requestedCameraId == 1) {
-                    VerificaApplication.isFrontCameraSelected = true
+                    viewModel.setFrontCameraStatus(true)
                 } else if (binding.barcodeScanner.cameraSettings.requestedCameraId == -1) {
-                    VerificaApplication.isFrontCameraSelected = false
+                    viewModel.setFrontCameraStatus(false)
                 }
             }
         }

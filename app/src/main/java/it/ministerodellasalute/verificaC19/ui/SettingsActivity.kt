@@ -22,16 +22,22 @@
 
 package it.ministerodellasalute.verificaC19.ui
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.R
-import it.ministerodellasalute.verificaC19.VerificaApplication
 import it.ministerodellasalute.verificaC19.databinding.ActivitySettingsBinding
+import it.ministerodellasalute.verificaC19sdk.model.VerificationViewModel
 
+@AndroidEntryPoint
 class SettingsActivity : AppCompatActivity(), View.OnClickListener {
 
     lateinit var binding: ActivitySettingsBinding
+    private val viewModel by viewModels<VerificationViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,17 +49,27 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
         binding.backImage.setOnClickListener(this)
         binding.backText.setOnClickListener(this)
         binding.totemSwitch.setOnClickListener(this)
+        binding.faqCard.setOnClickListener(this)
+        binding.privacyPolicyCard.setOnClickListener(this)
     }
 
     private fun setSwitchesValue() {
-        binding.totemSwitch.isChecked = VerificaApplication.isTotemModeActive
+        binding.totemSwitch.isChecked = viewModel.getTotemMode()
     }
 
     override fun onClick(v: View?) {
         if (v?.id == R.id.back_image || v?.id == R.id.back_text) {
             finish()
         } else if (v?.id == R.id.totem_switch) {
-            VerificaApplication.isTotemModeActive = binding.totemSwitch.isChecked
+            viewModel.setTotemMode(binding.totemSwitch.isChecked)
+        } else if (v?.id == R.id.faq_card) {
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://www.dgc.gov.it/web/pn.html"))
+            startActivity(browserIntent)
+        } else if (v?.id == R.id.privacy_policy_card) {
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://www.dgc.gov.it/web/faq.html"))
+            startActivity(browserIntent)
         }
     }
 }

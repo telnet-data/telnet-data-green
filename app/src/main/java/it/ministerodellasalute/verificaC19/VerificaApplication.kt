@@ -63,10 +63,4 @@ class VerificaApplication : Application(), Configuration.Provider {
                 uploadWorkRequest as PeriodicWorkRequest
             )
     }
-
-    companion object {
-        var isTotemModeActive = false
-        var isFrontCameraSelected = false
-    }
-
 }

@@ -79,7 +79,7 @@ class VerificationFragment : Fragment(), View.OnClickListener {
                 setupCertStatusView(it)
                 setupTimeStamp(it)
 
-                if (VerificaApplication.isTotemModeActive && (certificate.certificateStatus == CertificateStatus.VALID
+                if (viewModel.getTotemMode() && (certificate.certificateStatus == CertificateStatus.VALID
                     || certificate.certificateStatus == CertificateStatus.PARTIALLY_VALID)) {
                     Handler().postDelayed({
                         activity?.onBackPressed()

@@ -31,7 +31,6 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,18 +38,16 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.text.set
 import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.BuildConfig
 import it.ministerodellasalute.verificaC19.R
-import it.ministerodellasalute.verificaC19.VerificaApplication
 import it.ministerodellasalute.verificaC19.databinding.ActivityFirstBinding
 import it.ministerodellasalute.verificaC19.ui.main.MainActivity
-import it.ministerodellasalute.verificaC19sdk.util.Utility
 import it.ministerodellasalute.verificaC19sdk.model.FirstViewModel
 import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_DATE_LAST_SYNC
 import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseTo
+import it.ministerodellasalute.verificaC19sdk.util.Utility
 
 
 @AndroidEntryPoint
@@ -165,14 +162,6 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun openQrCodeReader() {
         val intent = Intent(this, MainActivity::class.java)
-
-        if (VerificaApplication.isFrontCameraSelected) {
-            if (this.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
-                intent.putExtra("SCAN_MODE", "QR_CODE_MODE")
-                intent.putExtra("SCAN_CAMERA_ID", 1)
-                Log.i("MyTag", "Device has front camera.")
-            }
-        }
         startActivity(intent)
     }
 
