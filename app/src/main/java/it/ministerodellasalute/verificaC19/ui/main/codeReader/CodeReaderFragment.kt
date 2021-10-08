@@ -99,6 +99,13 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
 
         binding.barcodeScanner.barcodeView.decoderFactory = DefaultDecoderFactory(formats)
         binding.barcodeScanner.initializeFromIntent(requireActivity().intent)
+
+        if (VerificaApplication.isFrontCameraSelected) {
+            binding.barcodeScanner.cameraSettings.requestedCameraId = 1
+        } else {
+            binding.barcodeScanner.cameraSettings.requestedCameraId = -1
+        }
+
         binding.barcodeScanner.decodeContinuous(callback)
         binding.barcodeScanner.statusView.text = ""
         beepManager = BeepManager(requireActivity())
@@ -153,7 +160,12 @@ class CodeReaderFragment : Fragment(), NavController.OnDestinationChangedListene
                 binding.barcodeScanner.pause()
                 binding.barcodeScanner.cameraSettings.requestedCameraId *= -1
                 binding.barcodeScanner.resume()
-                VerificaApplication.isFrontCameraSelected = binding.barcodeScanner.cameraSettings.requestedCameraId == 1
+
+                if (binding.barcodeScanner.cameraSettings.requestedCameraId == 1) {
+                    VerificaApplication.isFrontCameraSelected = true
+                } else if (binding.barcodeScanner.cameraSettings.requestedCameraId == -1) {
+                    VerificaApplication.isFrontCameraSelected = false
+                }
             }
         }
     }

@@ -20,9 +20,6 @@
 
 package it.ministerodellasalute.verificaC19.ui.main.verification
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -40,9 +37,7 @@ import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.*
 import it.ministerodellasalute.verificaC19.databinding.FragmentVerificationBinding
-import it.ministerodellasalute.verificaC19.ui.FirstActivity
 import it.ministerodellasalute.verificaC19.ui.compounds.QuestionCompound
-import it.ministerodellasalute.verificaC19.ui.main.MainActivity
 import it.ministerodellasalute.verificaC19sdk.VerificaMinSDKVersionException
 import it.ministerodellasalute.verificaC19sdk.VerificaMinVersionException
 import it.ministerodellasalute.verificaC19sdk.model.CertificateSimple

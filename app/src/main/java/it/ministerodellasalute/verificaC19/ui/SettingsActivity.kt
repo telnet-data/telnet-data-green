@@ -43,12 +43,10 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
         binding.backImage.setOnClickListener(this)
         binding.backText.setOnClickListener(this)
         binding.totemSwitch.setOnClickListener(this)
-        binding.cameraSwitch.setOnClickListener(this)
     }
 
     private fun setSwitchesValue() {
         binding.totemSwitch.isChecked = VerificaApplication.isTotemModeActive
-        binding.cameraSwitch.isChecked = VerificaApplication.isFrontCameraSelected
     }
 
     override fun onClick(v: View?) {
@@ -56,8 +54,6 @@ class SettingsActivity : AppCompatActivity(), View.OnClickListener {
             finish()
         } else if (v?.id == R.id.totem_switch) {
             VerificaApplication.isTotemModeActive = binding.totemSwitch.isChecked
-        } else if (v?.id == R.id.camera_switch) {
-            VerificaApplication.isFrontCameraSelected = binding.cameraSwitch.isChecked
         }
     }
 }

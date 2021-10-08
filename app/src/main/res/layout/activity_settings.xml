@@ -163,45 +163,6 @@
 
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/camera_card"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/margin_16dp"
-                android:layout_marginTop="@dimen/margin_16dp"
-                android:background="@color/white"
-                app:cardCornerRadius="4dp"
-                app:cardElevation="@dimen/size_8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/totem_card">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/camera_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/titiliumfont"
-                    android:paddingHorizontal="@dimen/margin_24dp"
-                    android:paddingVertical="@dimen/margin_16dp"
-                    android:text="Fotocamera frontale"
-                    android:textColor="@color/blue_dark"
-                    android:textStyle="bold" />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/camera_switch"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="14dp"
-                    android:fontFamily="@font/titiliumfont"
-                    android:textColor="@color/blue"
-                    android:textSize="@dimen/text_size_14sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="parent"
-                    app:layout_constraintTop_toBottomOf="parent" />
-
-            </androidx.cardview.widget.CardView>
-
             <TextView
                 android:id="@+id/information_text"
                 android:layout_width="match_parent"
@@ -216,7 +177,7 @@
                 android:layout_marginTop="@dimen/padding_30dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/camera_card" />
+                app:layout_constraintTop_toBottomOf="@id/totem_card" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/faq_card"
