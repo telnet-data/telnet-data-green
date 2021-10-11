@@ -176,7 +176,7 @@ class VerificationFragment : Fragment(), View.OnClickListener {
                 requireContext(), when (certStatus) {
                     CertificateStatus.VALID -> R.drawable.ic_valid_cert
                     CertificateStatus.NOT_VALID_YET -> R.drawable.ic_not_valid_yet
-                    CertificateStatus.PARTIALLY_VALID -> R.drawable.ic_locally_valid
+                    CertificateStatus.PARTIALLY_VALID -> R.drawable.ic_valid_cert
                     CertificateStatus.NOT_EU_DCC -> R.drawable.ic_technical_error
                     else -> R.drawable.ic_invalid
                 }
@@ -196,7 +196,7 @@ class VerificationFragment : Fragment(), View.OnClickListener {
                 requireContext(),
                 when (certStatus) {
                     CertificateStatus.VALID -> R.color.green
-                    CertificateStatus.PARTIALLY_VALID -> R.color.blue_bg
+                    CertificateStatus.PARTIALLY_VALID -> R.color.green
                     else -> R.color.red_bg
                 }
             )
