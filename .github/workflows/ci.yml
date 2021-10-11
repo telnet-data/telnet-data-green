@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v2
       with:
