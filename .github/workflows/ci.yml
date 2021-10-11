@@ -19,6 +19,11 @@ jobs:
         path: dgca-app-core-android
     - uses: actions/checkout@v2
       with:
+        repository: ministero-salute/it-dgc-verificac19-sdk-android
+        ref: initial-sdk
+        path: it-dgc-verificac19-sdk-android
+    - uses: actions/checkout@v2
+      with:
         path: dgca-verifier-app-android
     - uses: actions/setup-java@v1
       with:
