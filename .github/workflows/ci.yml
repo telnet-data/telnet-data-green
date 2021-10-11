@@ -25,6 +25,7 @@ jobs:
         ref: initial-sdk
         path: it-dgc-verificac19-sdk-android
         token: ${{ secrets.ACCESS_TOKEN }}
+        submodules: recursive
     - uses: actions/checkout@v2
       with:
         path: dgca-verifier-app-android
