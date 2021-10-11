@@ -24,6 +24,7 @@ jobs:
         repository: ministero-salute/it-dgc-verificac19-sdk-android
         ref: initial-sdk
         path: it-dgc-verificac19-sdk-android
+        token: ${{ secrets.ACCESS_TOKEN }}
     - uses: actions/checkout@v2
       with:
         path: dgca-verifier-app-android
