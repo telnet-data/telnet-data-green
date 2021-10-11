@@ -21,6 +21,7 @@ jobs:
       with:
         repository: ministero-salute/it-dgc-verificac19-sdk-android
         ref: initial-sdk
+        lfs: true
         path: it-dgc-verificac19-sdk-android
         token: ${{ secrets.ACCESS_TOKEN }}
         submodules: recursive
