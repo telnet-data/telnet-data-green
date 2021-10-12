@@ -80,5 +80,5 @@
     <string name="label_scan_error_meaning">Cosa significa errore di lettura?</string>
     <string name="label_scan_times_needed">Quante volte devo riprovare a scansionare</string>
     <string name="label_validation_timestamp">Ora e data di validazione: %1$s</string>
-    <string name="label_totem_mode">Modalità totem</string>
+    <string name="label_totem_mode">Modalità automatica</string>
 </resources>
