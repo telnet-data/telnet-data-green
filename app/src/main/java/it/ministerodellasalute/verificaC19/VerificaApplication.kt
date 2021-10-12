@@ -63,4 +63,5 @@ class VerificaApplication : Application(), Configuration.Provider {
                 uploadWorkRequest as PeriodicWorkRequest
             )
     }
+
 }
