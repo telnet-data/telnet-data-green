@@ -38,16 +38,16 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.text.set
 import androidx.lifecycle.observe
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.BuildConfig
-import it.ministerodellasalute.verificaC19.FORMATTED_DATE_LAST_SYNC
 import it.ministerodellasalute.verificaC19.R
 import it.ministerodellasalute.verificaC19.databinding.ActivityFirstBinding
-import it.ministerodellasalute.verificaC19.parseTo
 import it.ministerodellasalute.verificaC19.ui.main.MainActivity
-import it.ministerodellasalute.verificaC19.util.Utility
+import it.ministerodellasalute.verificaC19sdk.util.Utility
+import it.ministerodellasalute.verificaC19sdk.model.FirstViewModel
+import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_DATE_LAST_SYNC
+import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseTo
 
 @AndroidEntryPoint
 class FirstActivity : AppCompatActivity(), View.OnClickListener {
@@ -74,6 +74,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
         setContentView(binding.root)
 
         binding.qrButton.setOnClickListener(this)
+        binding.settings.setOnClickListener(this)
 
         val string = getString(R.string.version, BuildConfig.VERSION_NAME)
         val spannableString = SpannableString(string).also {
@@ -151,10 +152,20 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
+        viewModel.getAppMinVersion().let {
+            if (Utility.versionCompare(it, BuildConfig.VERSION_NAME) > 0 || viewModel.isSDKVersionObsoleted()) {
+                createForceUpdateDialog()
+            }
+        }
     }
 
     private fun openQrCodeReader() {
         val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun openSettings() {
+        val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
     }
 
@@ -167,6 +178,7 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
         }
         when (v?.id) {
             R.id.qrButton -> checkCameraPermission()
+            R.id.settings -> openSettings()
         }
     }
 
@@ -178,6 +190,32 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
         }
         val dialog = builder.create()
         dialog.show()
+    }
+
+    private fun createForceUpdateDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.updateTitle))
+        builder.setMessage(getString(R.string.updateMessage))
+
+        builder.setPositiveButton(getString(R.string.updateLabel)) { dialog, which ->
+            openGooglePlay()
+        }
+        val dialog = builder.create()
+        dialog.setCancelable(false)
+        dialog.show()
+    }
+
+    private fun openGooglePlay() {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")))
+        } catch (e: ActivityNotFoundException) {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                )
+            )
+        }
     }
 
 }
