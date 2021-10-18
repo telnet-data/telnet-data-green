@@ -20,9 +20,6 @@
 
 package it.ministerodellasalute.verificaC19.ui.main.verification
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -34,15 +31,15 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.*
+import it.ministerodellasalute.verificaC19.data.GreenPassRequest
 import it.ministerodellasalute.verificaC19.databinding.FragmentVerificationBinding
-import it.ministerodellasalute.verificaC19.ui.FirstActivity
 import it.ministerodellasalute.verificaC19.ui.compounds.QuestionCompound
-import it.ministerodellasalute.verificaC19.ui.main.MainActivity
 import it.ministerodellasalute.verificaC19sdk.VerificaMinSDKVersionException
 import it.ministerodellasalute.verificaC19sdk.VerificaMinVersionException
 import it.ministerodellasalute.verificaC19sdk.model.CertificateSimple
@@ -54,7 +51,8 @@ import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_VALIDATION_DATE
 import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseFromTo
 import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseTo
 import it.ministerodellasalute.verificaC19sdk.util.YEAR_MONTH_DAY
-import okhttp3.internal.notify
+import kotlinx.coroutines.launch
+import java.util.*
 
 @ExperimentalUnsignedTypes
 @AndroidEntryPoint
@@ -62,6 +60,7 @@ class VerificationFragment : Fragment(), View.OnClickListener {
 
     private val args by navArgs<VerificationFragmentArgs>()
     private val viewModel by viewModels<VerificationViewModel>()
+    private val verViewModel by viewModels<VerificationFragmetViewModel>()
 
     private var _binding: FragmentVerificationBinding? = null
     private val binding get() = _binding!!
@@ -116,8 +115,17 @@ class VerificationFragment : Fragment(), View.OnClickListener {
 
     private fun notifyCertValid(cert: CertificateSimple){
         if(BuildConfig.SERVER_NOTIFY_URL != null){
-            //TODO notify!
             Log.i("GREEN_PASS_VALID", cert.person?.standardisedFamilyName + " " + cert.person?.standardisedGivenName + " " + cert.dateOfBirth)
+
+            lifecycleScope.launch {
+                verViewModel.sendDataToServer(
+                    GreenPassRequest(
+                        cert.person.standardisedGivenName,
+                        cert.person.standardisedFamilyName,
+                        cert.dateOfBirth
+                    )
+                )
+            }
         }
     }
 
