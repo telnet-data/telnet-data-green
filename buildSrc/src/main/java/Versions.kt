@@ -62,4 +62,7 @@ object Versions {
     const val junit = "4.13.1"
     const val junit_jupiter = "5.7.1"
     const val hamcrest = "2.2"
+
+    // Dokka
+    const val dokka = "1.5.0"
 }

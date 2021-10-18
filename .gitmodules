@@ -1,0 +1,6 @@
+[submodule "dgca-app-core-android"]
+	path = dgca-app-core-android
+	url = https://github.com/eu-digital-green-certificates/dgca-app-core-android
+[submodule "it-dgc-verificac19-sdk-android"]
+	path = it-dgc-verificac19-sdk-android
+	url = https://github.com/ministero-salute/it-dgc-verificac19-sdk-android.git
