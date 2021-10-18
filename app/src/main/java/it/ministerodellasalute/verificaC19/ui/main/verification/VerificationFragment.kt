@@ -54,6 +54,7 @@ import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_VALIDATION_DATE
 import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseFromTo
 import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseTo
 import it.ministerodellasalute.verificaC19sdk.util.YEAR_MONTH_DAY
+import okhttp3.internal.notify
 
 @ExperimentalUnsignedTypes
 @AndroidEntryPoint
@@ -86,8 +87,12 @@ class VerificationFragment : Fragment(), View.OnClickListener {
                 if (viewModel.getTotemMode() && (certificate.certificateStatus == CertificateStatus.VALID
                     || certificate.certificateStatus == CertificateStatus.PARTIALLY_VALID)) {
                     Handler().postDelayed({
-                        activity?.onBackPressed()
+                        close()
                     }, 5000)
+                }
+
+                if(certificate.certificateStatus == CertificateStatus.VALID){
+                    notifyCertValid(certificate)
                 }
             }
         }
@@ -107,7 +112,13 @@ class VerificationFragment : Fragment(), View.OnClickListener {
             Log.d("VerificationFragment", "Min App Version Exception")
             createForceUpdateDialog()
         }
+    }
 
+    private fun notifyCertValid(cert: CertificateSimple){
+        if(BuildConfig.SERVER_NOTIFY_URL != null){
+            //TODO notify!
+            Log.i("GREEN_PASS_VALID", cert.person?.standardisedFamilyName + " " + cert.person?.standardisedGivenName + " " + cert.dateOfBirth)
+        }
     }
 
     private fun setupCertStatusView(cert: CertificateSimple) {
@@ -215,8 +226,14 @@ class VerificationFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.close_button -> findNavController().popBackStack()
+            R.id.close_button -> this.close()
         }
+    }
+
+    private fun close(){
+        findNavController().popBackStack()
+
+        activity?.onBackPressed()
     }
 
     override fun onDestroyView() {

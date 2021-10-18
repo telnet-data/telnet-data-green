@@ -31,19 +31,25 @@ import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
+import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.observe
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.BuildConfig
 import it.ministerodellasalute.verificaC19.R
 import it.ministerodellasalute.verificaC19.databinding.ActivityFirstBinding
 import it.ministerodellasalute.verificaC19.ui.main.MainActivity
+import it.ministerodellasalute.verificaC19.ui.main.codeReader.CodeReaderFragmentDirections
 import it.ministerodellasalute.verificaC19sdk.util.Utility
 import it.ministerodellasalute.verificaC19sdk.model.FirstViewModel
 import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_DATE_LAST_SYNC
@@ -55,6 +61,9 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityFirstBinding
 
     private val viewModel by viewModels<FirstViewModel>()
+
+
+    var barcodeBuilder = StringBuilder()
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
@@ -218,4 +227,29 @@ class FirstActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.action == KeyEvent.ACTION_DOWN) {
+            if (event.keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (barcodeBuilder.isNotEmpty()) {
+                    barcodeScanned(barcodeBuilder.toString())
+                }
+                barcodeBuilder = java.lang.StringBuilder()
+            } else {
+                val c: Char = event.unicodeChar.toChar()
+                if (0 != c.code) {
+                    barcodeBuilder.append(c)
+                }
+            }
+        }
+        return true;
+    }
+
+    private fun barcodeScanned(bc: String){
+
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("qr", bc)
+
+        startActivity(intent)
+    }
 }

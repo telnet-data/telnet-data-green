@@ -25,9 +25,14 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.Navigation
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import it.ministerodellasalute.verificaC19.BuildConfig
 import it.ministerodellasalute.verificaC19.R
+import it.ministerodellasalute.verificaC19.ui.main.codeReader.CodeReaderFragmentDirections
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -40,6 +45,19 @@ class MainActivity : AppCompatActivity() {
                 WindowManager.LayoutParams.FLAG_SECURE
             )
         }
+
         setContentView(R.layout.activity_main)
+
+        if(intent.getStringExtra("qr") != null){
+
+            val action = CodeReaderFragmentDirections.actionCodeReaderFragmentToVerificationFragment(
+                intent.getStringExtra("qr")
+            )
+
+            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            val navController = navHostFragment.navController
+
+            navController.navigate(action)
+        }
     }
 }
