@@ -83,8 +83,7 @@ class VerificationFragment : Fragment(), View.OnClickListener {
                 setPersonData(it.person, it.dateOfBirth)
                 setupCertStatusView(it)
                 setupTimeStamp(it)
-                if (viewModel.getTotemMode() && (certificate.certificateStatus == CertificateStatus.VALID
-                    || certificate.certificateStatus == CertificateStatus.PARTIALLY_VALID)) {
+                if (viewModel.getTotemMode()) {
                     Handler().postDelayed({
                         close()
                     }, 5000)

@@ -9,5 +9,7 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/dgca-app-core-android" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/it-dgc-verificac19-sdk-android" vcs="Git" />
   </component>
 </project>
