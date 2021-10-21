@@ -24,6 +24,7 @@ package it.ministerodellasalute.verificaC19.api
 
 import it.ministerodellasalute.verificaC19.BuildConfig
 import it.ministerodellasalute.verificaC19.data.GreenPassRequest
+import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface WebApi {
@@ -32,7 +33,7 @@ interface WebApi {
         var BASE_URL = BuildConfig.SERVER_NOTIFY_URL
     }
 
-    @POST("")
-    suspend fun sendGreenPassResponse(req: GreenPassRequest)
+    @POST("http://172.20.0.50:8000/api/access/green_pass/")
+    suspend fun sendGreenPassResponse(@Body req: GreenPassRequest)
 
 }
