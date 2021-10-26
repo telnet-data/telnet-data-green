@@ -17,30 +17,15 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by pedro_cecchini on 18/10/21, 12:18
+ *  Created by pedro_cecchini on 25/10/21, 11:28
  */
 
-package it.ministerodellasalute.verificaC19.repository
+package it.ministerodellasalute.verificaC19.util
 
-import it.ministerodellasalute.verificaC19.api.WebApi
-import it.ministerodellasalute.verificaC19.data.GreenPassRequest
-import it.ministerodellasalute.verificaC19.util.Resource
-import retrofit2.HttpException
-import java.io.IOException
-import javax.inject.Inject
-
-class Repository @Inject constructor(
-    private val api: WebApi
+sealed class Resource<T>(
+    val data: T? = null,
+    val error: Throwable? = null
 ) {
-
-    suspend fun postGreenPass(req: GreenPassRequest): Resource<String>{
-        return try {
-            val res = api.sendGreenPassResponse(req)
-            Resource.Success(res.toString())
-        } catch (e: HttpException){
-            Resource.Error(e)
-        } catch (e: IOException){
-            Resource.Error(e)
-        }
-    }
+    class Success<T>(data: T): Resource<T>(data)
+    class Error<T>(throwable: Throwable, data: T? = null): Resource<T>(data, throwable)
 }

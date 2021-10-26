@@ -40,6 +40,8 @@ import it.ministerodellasalute.verificaC19.*
 import it.ministerodellasalute.verificaC19.data.GreenPassRequest
 import it.ministerodellasalute.verificaC19.databinding.FragmentVerificationBinding
 import it.ministerodellasalute.verificaC19.ui.compounds.QuestionCompound
+import it.ministerodellasalute.verificaC19.util.Resource
+import it.ministerodellasalute.verificaC19.util.showSnackBar
 import it.ministerodellasalute.verificaC19sdk.VerificaMinSDKVersionException
 import it.ministerodellasalute.verificaC19sdk.VerificaMinVersionException
 import it.ministerodellasalute.verificaC19sdk.model.CertificateSimple
@@ -51,7 +53,9 @@ import it.ministerodellasalute.verificaC19sdk.util.FORMATTED_VALIDATION_DATE
 import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseFromTo
 import it.ministerodellasalute.verificaC19sdk.util.TimeUtility.parseTo
 import it.ministerodellasalute.verificaC19sdk.util.YEAR_MONTH_DAY
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.util.*
 
 @ExperimentalUnsignedTypes
@@ -60,7 +64,7 @@ class VerificationFragment : Fragment(), View.OnClickListener {
 
     private val args by navArgs<VerificationFragmentArgs>()
     private val viewModel by viewModels<VerificationViewModel>()
-    private val verViewModel by viewModels<VerificationFragmetViewModel>()
+    private val verViewModel by viewModels<VerificationFragmentViewModel>()
 
     private var _binding: FragmentVerificationBinding? = null
     private val binding get() = _binding!!
@@ -83,13 +87,23 @@ class VerificationFragment : Fragment(), View.OnClickListener {
                 setPersonData(it.person, it.dateOfBirth)
                 setupCertStatusView(it)
                 setupTimeStamp(it)
-                if (viewModel.getTotemMode()) {
+                if (viewModel.getTotemMode()) { //todo non sempre con il totem mode funziona
+                    Log.e("[CHECK TYPE]", "TOTEM")
                     Handler().postDelayed({
                         close()
                     }, 5000)
+                }else{
+                    Log.e("[CHECK TYPE]", "NO TOTEM")
+                    Handler().postDelayed({
+                        try {
+                            close()
+                        } catch (e: IOException){
+                            Log.e("ERROR", "ERRORE IN FASE DI CHIUSURA")
+                        }
+                    },5000)
                 }
 
-                if(certificate.certificateStatus == CertificateStatus.VALID){
+                if(certificate.certificateStatus == CertificateStatus.VALID || certificate.certificateStatus == CertificateStatus.PARTIALLY_VALID){
                     notifyCertValid(certificate)
                 }
             }
@@ -110,12 +124,21 @@ class VerificationFragment : Fragment(), View.OnClickListener {
             Log.d("VerificationFragment", "Min App Version Exception")
             createForceUpdateDialog()
         }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            verViewModel.serverResponse.collect { response ->
+                Log.i("[CHECK CALLBACK]", response.toString())
+                if (response is Resource.Error<*>) {
+                    showSnackBar("Impossibile comunicare con il server. Errore:".plus(
+                        response.error ?: "Unkwnon error occured")
+                    )
+                }
+            }
+        }
     }
 
     private fun notifyCertValid(cert: CertificateSimple){
         if(BuildConfig.SERVER_NOTIFY_URL != null){
-            Log.i("GREEN_PASS_VALID", cert.person?.standardisedFamilyName + " " + cert.person?.standardisedGivenName + " " + cert.dateOfBirth)
-
             lifecycleScope.launch {
                 verViewModel.sendDataToServer(
                     GreenPassRequest(
