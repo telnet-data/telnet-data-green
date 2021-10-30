@@ -34,7 +34,7 @@ interface WebApi {
         var BASE_URL = BuildConfig.SERVER_NOTIFY_URL
     }
 
-    @POST("http://172.20.0.50:8000/api/access/green_pass/")
+    @POST(BuildConfig.SERVER_NOTIFY_URL)
     suspend fun sendGreenPassResponse(@Body req: GreenPassRequest)
 
 }
