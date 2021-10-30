@@ -24,6 +24,7 @@ package it.ministerodellasalute.verificaC19.api
 
 import it.ministerodellasalute.verificaC19.BuildConfig
 import it.ministerodellasalute.verificaC19.data.GreenPassRequest
+import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 

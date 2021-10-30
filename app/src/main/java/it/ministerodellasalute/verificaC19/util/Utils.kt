@@ -17,25 +17,19 @@
  *  limitations under the License.
  *  ---license-end
  *
- *  Created by pedro_cecchini on 18/10/21, 12:33
+ *  Created by pedro_cecchini on 25/10/21, 12:27
  */
 
-package it.ministerodellasalute.verificaC19.ui.main.verification
+package it.ministerodellasalute.verificaC19.util
 
-import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import it.ministerodellasalute.verificaC19.data.GreenPassRequest
-import it.ministerodellasalute.verificaC19.repository.Repository
-import javax.inject.Inject
+import android.view.View
+import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
 
-@HiltViewModel
-class VerificationFragmetViewModel @Inject constructor(
-    private val repository: Repository
-): ViewModel() {
-
-    var response: String = ""
-
-    suspend fun sendDataToServer(req: GreenPassRequest){
-        repository.postGreenPass(req)
-    }
+fun Fragment.showSnackBar(
+    message: String,
+    duration: Int = Snackbar.LENGTH_LONG,
+    view: View = requireView()
+) {
+    Snackbar.make(view, message, duration).show()
 }
